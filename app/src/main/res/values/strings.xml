@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name" translatable="false">MARVI</string>
+
+    <string name="marvi_welcome_message">Comprobando conexión…</string>
+    <string name="marvi_welcome_dialog_error_title">Error de conexión</string>
+    <string name="marvi_welcome_dialog_error_message">el servidor no responde, revisa tu conección a internet</string>
+    <string name="marvi_welcome_dialog_error_confirm_button">Salir</string>
+
+    <string name="marvi_core_dialog_loading_title">Cargando…</string>
+    <string name="marvi_core_dialog_loading_message">por favor, espera mientras se procesa tu información</string>
+
+    <string name="marvi_login_email">Correo electrónico</string>
+    <string name="marvi_login_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="marvi_login_password">Contraseña</string>
+    <string name="marvi_login_password_placeholder">Ingresa tu contraseña</string>
+    <string name="marvi_login_button">Iniciar sesión</string>
+    <string name="marvi_login_button_message">El correo electrónico y la contraseña deben ser válidos</string>
+    <string name="marvi_login_forgot_button">¿Olvidaste tu contraseña?</string>
+    <string name="marvi_login_register_button">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="marvi_login_dialog_success_title">¡Inicio de sesión exitoso!</string>
+    <string name="marvi_login_dialog_success_confirm_button">Continuar</string>
+    <string name="marvi_login_dialog_error_title">Error al iniciar sesión</string>
+    <string name="marvi_login_dialog_error_confirm_button">Aceptar</string>
+
+    <string name="marvi_register_title">¿No tienes cuenta?</string>
+    <string name="marvi_register_subtitle">¡Registrate ahora mismo! Solo completa la información necesaria* para comenzar.</string>
+    <string name="marvi_register_code">Usuario*</string>
+    <string name="marvi_register_code_placeholder">Crea un nombre de usuario</string>
+    <string name="marvi_register_name">Nombre*</string>
+    <string name="marvi_register_name_placeholder">Ingresa tu nombre real</string>
+    <string name="marvi_register_first_surname">Primer apellido*</string>
+    <string name="marvi_register_first_surname_placeholder">Ingresa tu primer apellido</string>
+    <string name="marvi_register_second_surname">Segundo apellido</string>
+    <string name="marvi_register_second_surname_placeholder">Ingresa tu segundo apellido</string>
+    <string name="marvi_register_next_button">Siguiente</string>
+    <string name="marvi_register_back_button">Anterior</string>
+    <string name="marvi_register_next_button_message">El usuario, nombre y apellido debe tener al menos 3 caracteres</string>
+    <string name="marvi_register_toast_message">El nombre de usuario ya esta registrado</string>
+    <string name="marvi_register_phone">Número de teléfono*</string>
+    <string name="marvi_register_phone_placeholder">Número de teléfono de 10 dígitos</string>
+    <string name="marvi_register_email">Correo electrónico*</string>
+    <string name="marvi_register_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="marvi_register_password">Crea una contraseña*</string>
+    <string name="marvi_register_password_placeholder">Mínimo 8 caracteres</string>
+    <string name="marvi_register_button">Registrarse</string>
+    <string name="marvi_register_button_message">El número de teléfono, correo electrónico y contraseña deben ser válidos</string>
+    <string name="marvi_register_dialog_question_title">Confirmar registro</string>
+    <string name="marvi_register_dialog_question_message">¿tu información es correcta?</string>
+    <string name="marvi_register_dialog_question_confirm_button">Si</string>
+    <string name="marvi_register_dialog_question_dismiss_button">No</string>
+    <string name="marvi_register_dialog_success_title">¡Registro exitoso!</string>
+    <string name="marvi_register_dialog_success_confirm_button">Iniciar sesión</string>
+    <string name="marvi_register_dialog_error_confirm_button">Aceptar</string>
+
+    <string name="marvi_recovery_title">¿Olvidaste tu contraseña?</string>
+    <string name="marvi_recovery_subtitle">¡No te preocupes!, te enviaremos un enlace a tu correo electrónico para que puedas restablecer tu contraseña.</string>
+    <string name="marvi_recovery_email">Correo electrónico*</string>
+    <string name="marvi_recovery_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="marvi_recovery_tip">Si no ves el correo en unos minutos, revisa tu bandeja de spam o correos no deseados.</string>
+    <string name="marvi_recovery_button">Restablecer contraseña</string>
+    <string name="marvi_recovery_button_message">El correo electrónico debe ser válido</string>
+    <string name="marvi_recovery_dialog_question_title">Confirmar restablecimiento</string>
+    <string name="marvi_recovery_dialog_question_message">¿tu correo electrónico es correcto?</string>
+    <string name="marvi_recovery_dialog_question_confirm_button">Si</string>
+    <string name="marvi_recovery_dialog_question_dismiss_button">No</string>
+    <string name="marvi_recovery_dialog_success_title">¡Correo enviado!</string>
+    <string name="marvi_recovery_dialog_success_confirm_button">Iniciar sesión</string>
+    <string name="marvi_recovery_dialog_error_confirm_button">Aceptar</string>
+</resources>
