@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name" translatable="false">MARVI</string>
+    <string name="marvi_login_email">Correo electrónico</string>
+    <string name="marvi_login_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="marvi_login_password">Contraseña</string>
+    <string name="marvi_login_password_placeholder">Ingresa tu contraseña</string>
+    <string name="marvi_login_button">Iniciar sesión</string>
+    <string name="marvi_login_button_message">El correo y la contraseña deben ser válidos.</string>
+    <string name="marvi_login_forgot_button">¿Olvidaste tu contraseña?</string>
+    <string name="marvi_login_register_button">¿No tienes cuenta? Regístrate aquí</string>
+
+    <string name="marvi_register_title">Registro</string>
+    <string name="marvi_register_subtitle">¡Tu ropa está en buenas manos! Completa la información necesaria* para comenzar.</string>
+    <string name="marvi_register_code">Usuario*</string>
+    <string name="marvi_register_code_placeholder">Crea un nombre de usuario</string>
+    <string name="marvi_register_name">Nombre*</string>
+    <string name="marvi_register_name_placeholder">Ingresa tu nombre real</string>
+    <string name="marvi_register_first_surname">Primer apellido*</string>
+    <string name="marvi_register_first_surname_placeholder">Ingresa tu primer apellido</string>
+    <string name="marvi_register_second_surname">Segundo apellido</string>
+    <string name="marvi_register_second_surname_placeholder">Ingresa tu segundo apellido</string>
+    <string name="marvi_register_next_button">Siguiente</string>
+    <string name="marvi_register_back_button">Anterior</string>
+    <string name="marvi_register_next_button_message">El usuario, nombre y apellido debe tener al menos 3 caracteres.</string>
+    <string name="marvi_register_phone">Número de teléfono*</string>
+    <string name="marvi_register_phone_placeholder">Número de teléfono a 10 dígitos</string>
+    <string name="marvi_register_email">Correo electrónico*</string>
+    <string name="marvi_register_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="marvi_register_password">Crea una contraseña*</string>
+    <string name="marvi_register_password_placeholder">Mínimo 8 caracteres</string>
+    <string name="marvi_register_button">Registrarse</string>
+    <string name="marvi_register_button_message">El número de teléfono, correo y contraseña deben ser válidos.</string>
+
+    <string name="marvi_register_dialog_question_title">Confirmar registro</string>
+    <string name="marvi_register_dialog_question_message">¿Tu información es correcta?</string>
+    <string name="marvi_register_dialog_loading_title">Cargando...</string>
+    <string name="marvi_register_dialog_loading_message">Por favor, espera mientras se procesa tu información.</string>
+    <string name="marvi_register_dialog_success_title">¡Registro exitoso!</string>
+    <string name="marvi_register_dialog_success_message">Revisa tu correo electrónico para verificar tu cuenta. ¡Bienvenido!</string>
+</resources>
