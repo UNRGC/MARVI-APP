@@ -1,4 +1,4 @@
-package com.marvilanundry.marvi.data.remote
+package com.marvilanundry.marvi.data.dto
 
 import com.marvilanundry.marvi.domain.model.Client
 import kotlinx.serialization.Serializable
@@ -14,7 +14,6 @@ data class ClientDto(
     val correo: String?,
     val contrasena: String?,
     val fecha_registro: String,
-    val foto_src: String?,
     val activo: Boolean
 )
 
@@ -28,7 +27,6 @@ fun ClientDto.toClient(): Client = Client(
     correo = correo,
     contrasena = contrasena,
     fecha_registro = fecha_registro,
-    foto_src = foto_src,
     activo = activo
 )
 
@@ -42,6 +40,5 @@ fun Client.toClientDto(): ClientDto = ClientDto(
     correo = correo,
     contrasena = contrasena,
     fecha_registro = fecha_registro,
-    foto_src = foto_src,
     activo = activo
 )

@@ -10,6 +10,5 @@ data class Client(
     val correo: String?,
     val contrasena: String?,
     val fecha_registro: String,
-    val foto_src: String?,
     val activo: Boolean
 )

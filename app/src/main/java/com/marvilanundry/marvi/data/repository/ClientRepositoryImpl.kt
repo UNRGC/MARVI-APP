@@ -1,10 +1,10 @@
 package com.marvilanundry.marvi.data.repository
 
 import com.marvilanundry.marvi.data.remote.ApiService
-import com.marvilanundry.marvi.data.remote.toClient
-import com.marvilanundry.marvi.data.remote.toEmailDto
-import com.marvilanundry.marvi.data.remote.toLoginDto
-import com.marvilanundry.marvi.data.remote.toNewClientDto
+import com.marvilanundry.marvi.data.dto.toClient
+import com.marvilanundry.marvi.data.dto.toEmailDto
+import com.marvilanundry.marvi.data.dto.toLoginDto
+import com.marvilanundry.marvi.data.dto.toNewClientDto
 import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.domain.model.Email
 import com.marvilanundry.marvi.domain.model.Login

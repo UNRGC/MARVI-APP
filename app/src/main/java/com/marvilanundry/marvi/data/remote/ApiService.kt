@@ -1,5 +1,11 @@
 package com.marvilanundry.marvi.data.remote
 
+import com.marvilanundry.marvi.data.dto.ClientDto
+import com.marvilanundry.marvi.data.dto.CodeDto
+import com.marvilanundry.marvi.data.dto.EmailDto
+import com.marvilanundry.marvi.data.dto.LoginDto
+import com.marvilanundry.marvi.data.dto.MessageDto
+import com.marvilanundry.marvi.data.dto.NewClientDto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

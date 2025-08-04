@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,10 +43,12 @@ import com.marvilanundry.marvi.presentation.core.components.MARVIButtonType
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialog
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialogType
 import com.marvilanundry.marvi.presentation.core.components.MARVITextField
+import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LoginScreen(
+    sharedViewModel: SharedViewModel,
     onNavigateToRegister: () -> Unit = {},
     onNavigateToForgot: () -> Unit = {},
     onNavigateToHome: () -> Unit = {}
@@ -71,6 +74,7 @@ fun LoginScreen(
             }
 
             client != null -> {
+                sharedViewModel.setClient(client)
                 showDialogSuccess = true
             }
         }
@@ -89,7 +93,15 @@ fun LoginScreen(
             MARVIDialog(
                 type = MARVIDialogType.SUCCESS,
                 title = stringResource(id = R.string.marvi_login_dialog_success_title),
+                message = stringResource(id = R.string.marvi_login_dialog_success_message),
+                confirmButtonText = stringResource(id = R.string.marvi_login_dialog_success_confirm_button),
                 onConfirm = {
+                    loginViewModel.resetState()
+                    showDialogSuccess = false
+                    onNavigateToHome()
+                },
+                onDismiss = {
+                    loginViewModel.resetState()
                     showDialogSuccess = false
                     onNavigateToHome()
                 })
@@ -101,6 +113,9 @@ fun LoginScreen(
                 title = stringResource(id = R.string.marvi_login_dialog_error_title),
                 message = dialogMessage,
                 onConfirm = {
+                    showDialogError = false
+                },
+                onDismiss = {
                     showDialogError = false
                 })
         }
@@ -183,6 +198,11 @@ fun LoginScreen(
                         },
                         visualTransformation = if (!viewPassword) PasswordVisualTransformation() else VisualTransformation.None,
                         keyboardType = KeyboardType.Password,
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                loginViewModel.login()
+                            }),
                         capitalization = KeyboardCapitalization.None,
                         singleLine = true,
                         onValueChange = { input ->
@@ -203,6 +223,7 @@ fun LoginScreen(
                         message = stringResource(id = R.string.marvi_login_button_message),
                         enabled = loginViewModelState.isLoginEnabled
                     ) {
+                        focusManager.clearFocus()
                         loginViewModel.login()
                     }
                     Spacer(
@@ -213,6 +234,7 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         type = MARVIButtonType.OUTLINED
                     ) {
+                        loginViewModel.resetState()
                         onNavigateToForgot()
                     }
                     Spacer(
@@ -224,6 +246,7 @@ fun LoginScreen(
                         type = MARVIButtonType.LINK,
                         fontSize = 12.sp
                     ) {
+                        loginViewModel.resetState()
                         onNavigateToRegister()
                     }
                 }

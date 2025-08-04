@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -19,6 +20,8 @@ import com.marvilanundry.marvi.presentation.auth.welcome.WelcomeScreen
 
 @Composable
 fun NavigationWrapper() {
+    val sharedViewModel: SharedViewModel = hiltViewModel()
+
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -34,14 +37,12 @@ fun NavigationWrapper() {
                 })
         }
         composable<Login> {
-            LoginScreen(onNavigateToRegister = {
+            LoginScreen(sharedViewModel = sharedViewModel, onNavigateToRegister = {
                 navController.navigate(Register)
             }, onNavigateToForgot = {
                 navController.navigate(Recovery)
             }, onNavigateToHome = {
-                navController.navigate(Home) {
-                    popUpTo(Login) { inclusive = true }
-                }
+                navController.navigate(Home)
             })
         }
         composable<Register>(enterTransition = {
@@ -60,11 +61,11 @@ fun NavigationWrapper() {
         }
         composable<Recovery>(enterTransition = {
             slideInHorizontally(
-                initialOffsetX = { -it },
+                initialOffsetX = { it },
             ) + fadeIn()
         }, exitTransition = {
             slideOutHorizontally(
-                targetOffsetX = { -it },
+                targetOffsetX = { it },
             ) + fadeOut()
         }) {
             RecoveryScreen(
@@ -82,8 +83,9 @@ fun NavigationWrapper() {
             ) + fadeOut()
         }) {
             HomeScreen(
-                onNavigateToLogin = {}
-            )
+                sharedViewModel = sharedViewModel, onNavigateToLogin = {
+                    navController.popBackStack()
+                })
         }
     }
 }

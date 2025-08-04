@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +24,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -34,18 +34,18 @@ import com.marvilanundry.marvi.ui.theme.CustomColors
 @Composable
 private fun MARVIDialogBase(
     title: String,
-    message: String?,
+    message: String,
     composition: LottieComposition?,
     infinite: Boolean,
     dismissButtonText: String,
     confirmButtonText: String,
-    onDismissRequest: () -> Unit,
+    onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(MaterialTheme.shapes.small)
             .background(CustomColors.backgroundVariant)
             .padding(32.dp, 16.dp, 32.dp, 32.dp),
     ) {
@@ -57,6 +57,9 @@ private fun MARVIDialogBase(
                 modifier = Modifier.size(128.dp),
                 contentScale = ContentScale.Crop,
                 iterations = if (infinite) LottieConstants.IterateForever else 1,
+                clipSpec = if (!infinite) LottieClipSpec.Frame(
+                    min = 24, max = 90
+                ) else null
             )
             Text(
                 text = title,
@@ -66,7 +69,7 @@ private fun MARVIDialogBase(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if (message != null) Text(
+            Text(
                 text = message,
                 color = CustomColors.textColor,
                 textAlign = TextAlign.Center,
@@ -80,7 +83,7 @@ private fun MARVIDialogBase(
                             text = dismissButtonText,
                             modifier = Modifier.weight(1f),
                             type = MARVIButtonType.SECONDARY,
-                            onClick = onDismissRequest
+                            onClick = onDismiss
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                     }
@@ -97,8 +100,7 @@ private fun MARVIDialogBase(
 
 enum class MARVIDialogType(val lottieRes: Int, val infinite: Boolean) {
     LOADING(R.raw.loader, true), ERROR(R.raw.error, false), SUCCESS(R.raw.success, false), QUESTION(
-        R.raw.question,
-        false
+        R.raw.question, false
     )
 }
 
@@ -106,16 +108,16 @@ enum class MARVIDialogType(val lottieRes: Int, val infinite: Boolean) {
 fun MARVIDialog(
     type: MARVIDialogType,
     title: String,
-    message: String? = null,
+    message: String,
     confirmButtonText: String = "",
     dismissButtonText: String = "",
     onConfirm: () -> Unit = {},
-    onDismissRequest: () -> Unit = { onConfirm() }
+    onDismiss: () -> Unit = {}
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(type.lottieRes))
 
     Dialog(
-        onDismissRequest = if (type == MARVIDialogType.LOADING) ({}) else onDismissRequest,
+        onDismissRequest = if (type == MARVIDialogType.LOADING) ({}) else onDismiss,
         properties = DialogProperties(
             dismissOnBackPress = type != MARVIDialogType.LOADING,
             dismissOnClickOutside = type != MARVIDialogType.LOADING
@@ -129,7 +131,7 @@ fun MARVIDialog(
             confirmButtonText = confirmButtonText,
             dismissButtonText = dismissButtonText,
             onConfirm = onConfirm,
-            onDismissRequest = onDismissRequest
+            onDismiss = onDismiss
         )
     }
 }
