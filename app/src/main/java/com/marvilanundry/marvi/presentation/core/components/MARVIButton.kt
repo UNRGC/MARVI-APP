@@ -166,8 +166,7 @@ fun MARVIButton(
             if (iconRes != null) {
                 Icon(
                     painter = painterResource(id = iconRes),
-                    contentDescription = text,
-                    modifier = Modifier.fillMaxSize()
+                    contentDescription = text
                 )
             }
         }

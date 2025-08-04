@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,18 +26,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.marvilanundry.marvi.ui.theme.CustomColors
 
 @Composable
 private fun MARVITextFieldBase(
     labelContent: @Composable () -> Unit,
+    modifier: Modifier,
     value: String,
     readOnly: Boolean,
     placeholder: String,
     trailingIcon: @Composable (() -> Unit)?,
     visualTransformation: VisualTransformation,
     keyboardType: KeyboardType,
+    keyboardActions: KeyboardActions,
     capitalization: KeyboardCapitalization,
     singleLine: Boolean,
     maxLength: Int,
@@ -45,9 +49,8 @@ private fun MARVITextFieldBase(
     val registerInteraction = remember { MutableInteractionSource() }
     val isFocused by registerInteraction.collectIsFocusedAsState()
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         labelContent()
-        Spacer(modifier = Modifier.height(12.dp))
         TextField(
             value = value,
             onValueChange = { if (it.length <= maxLength) onValueChange(it) },
@@ -60,7 +63,7 @@ private fun MARVITextFieldBase(
                 ),
             readOnly = readOnly,
             placeholder = {
-                Text(text = placeholder, color = CustomColors.placeholderColor)
+                Text(text = placeholder, color = CustomColors.placeholderColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
             trailingIcon = trailingIcon,
             visualTransformation = visualTransformation,
@@ -68,6 +71,7 @@ private fun MARVITextFieldBase(
                 keyboardType = keyboardType,
                 capitalization = capitalization
             ),
+            keyboardActions = keyboardActions,
             singleLine = singleLine,
             interactionSource = registerInteraction,
             shape = MaterialTheme.shapes.small,
@@ -85,7 +89,8 @@ private fun MARVITextFieldBase(
 
 @Composable
 fun MARVITextField(
-    label: String,
+    label: String? = null,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     value: String,
     readOnly: Boolean = false,
     placeholder: String,
@@ -94,6 +99,7 @@ fun MARVITextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardType: KeyboardType,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
     singleLine: Boolean,
     maxLength: Int = 100,
@@ -101,27 +107,32 @@ fun MARVITextField(
 ) {
     MARVITextFieldBase(
         labelContent = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (icon != null && iconDescription != null) {
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = iconDescription,
-                        tint = CustomColors.textColor
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
+            if (label != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (icon != null && iconDescription != null) {
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = iconDescription,
+                            tint = CustomColors.textColor
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    Text(text = label, color = CustomColors.textColor)
                 }
-                Text(text = label, color = CustomColors.textColor)
-            }
+                Spacer(modifier = Modifier.height(12.dp))
+            } else null
         },
+        modifier = modifier,
         value = value,
         readOnly = readOnly,
         placeholder = placeholder,
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,
         keyboardType = keyboardType,
+        keyboardActions = keyboardActions,
         capitalization = capitalization,
         singleLine = singleLine,
         maxLength = maxLength,

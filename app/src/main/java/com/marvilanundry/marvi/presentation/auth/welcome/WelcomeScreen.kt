@@ -50,7 +50,7 @@ fun WelcomeScreen(onNavigateToLogin: () -> Unit) {
     val compositionLoader by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loader))
     val animatedProgress by animateFloatAsState(
         targetValue = if (!welcomeViewModelState.isLoading) 1f else 0f,
-        animationSpec = tween(durationMillis = if (!welcomeViewModelState.isLoading) 3000 else 60000),
+        animationSpec = tween(3000),
         finishedListener = {
             if (welcomeViewModelState.available) onNavigateToLogin() else showDialogError = true
         })

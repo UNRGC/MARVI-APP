@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -101,7 +102,7 @@ fun RecoveryScreen(
                     showDialogQuestion = false
                     recoveryViewModel.recovery()
                 },
-                onDismissRequest = {
+                onDismiss = {
                     showDialogQuestion = false
                 })
         }
@@ -115,6 +116,10 @@ fun RecoveryScreen(
                 onConfirm = {
                     showDialogSuccess = false
                     onNavigateToLogin()
+                },
+                onDismiss = {
+                    showDialogSuccess = false
+                    onNavigateToLogin()
                 })
         }
 
@@ -125,6 +130,9 @@ fun RecoveryScreen(
                 message = dialogMessage,
                 confirmButtonText = stringResource(id = R.string.marvi_recovery_dialog_error_confirm_button),
                 onConfirm = {
+                    showDialogError = false
+                },
+                onDismiss = {
                     showDialogError = false
                 })
         }
@@ -150,7 +158,7 @@ fun RecoveryScreen(
                 ) {
                     MARVIButton(
                         type = MARVIButtonType.ICON,
-                        iconRes = R.drawable.ic_arrow_left_short,
+                        iconRes = R.drawable.ic_arrow_left,
                     ) {
                         disableScreen = true
                         onNavigateToLogin()
@@ -198,6 +206,12 @@ fun RecoveryScreen(
                         value = recoveryViewModelState.email,
                         placeholder = stringResource(id = R.string.marvi_recovery_email_placeholder),
                         keyboardType = KeyboardType.Email,
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                showDialogQuestion = true
+                            }
+                        ),
                         capitalization = KeyboardCapitalization.None,
                         singleLine = true,
                         onValueChange = { input ->

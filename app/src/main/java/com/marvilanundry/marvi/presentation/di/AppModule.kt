@@ -1,4 +1,4 @@
-package com.marvilanundry.marvi
+package com.marvilanundry.marvi.presentation.di
 
 import com.marvilanundry.marvi.data.remote.ApiService
 import com.marvilanundry.marvi.data.repository.ApiRepositoryImpl

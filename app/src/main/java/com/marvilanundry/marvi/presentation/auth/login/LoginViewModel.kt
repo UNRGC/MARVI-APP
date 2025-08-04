@@ -57,7 +57,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
-        _state.value = _state.value.copy(isLoading = true, client = null, error = null)
+        _state.value = _state.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             val credentials = Login(
                 correo = _state.value.email, contrasena = _state.value.password
@@ -69,6 +69,10 @@ class LoginViewModel @Inject constructor(
                 _state.value = _state.value.copy(error = e.message, isLoading = false)
             }
         }
+    }
+
+    fun resetState() {
+        _state.value = LoginUiState()
     }
 }
 

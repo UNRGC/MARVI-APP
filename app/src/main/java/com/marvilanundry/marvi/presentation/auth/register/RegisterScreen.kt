@@ -254,7 +254,7 @@ fun RegisterScreen(
                     showDialogQuestion = false
                     registerViewModel.register()
                 },
-                onDismissRequest = {
+                onDismiss = {
                     showDialogQuestion = false
                 })
         }
@@ -269,6 +269,11 @@ fun RegisterScreen(
                     disableScreen = true
                     showDialogSuccess = false
                     onNavigateToLogin()
+                },
+                onDismiss = {
+                    disableScreen = true
+                    showDialogSuccess = false
+                    onNavigateToLogin()
                 })
         }
 
@@ -279,6 +284,9 @@ fun RegisterScreen(
                 message = dialogMessage,
                 confirmButtonText = stringResource(id = R.string.marvi_register_dialog_error_confirm_button),
                 onConfirm = {
+                    showDialogError = false
+                },
+                onDismiss = {
                     showDialogError = false
                 })
         }
@@ -304,7 +312,7 @@ fun RegisterScreen(
                 ) {
                     MARVIButton(
                         type = MARVIButtonType.ICON,
-                        iconRes = R.drawable.ic_arrow_left_short,
+                        iconRes = R.drawable.ic_arrow_left,
                     ) {
                         if (registerViewModelState.section == 0) {
                             disableScreen = true

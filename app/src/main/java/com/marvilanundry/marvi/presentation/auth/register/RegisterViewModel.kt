@@ -180,7 +180,7 @@ class RegisterViewModel @Inject constructor(
 
     fun checkCode() {
         _state.value =
-            _state.value.copy(isLoading = true, message = null, error = null, warning = null)
+            _state.value.copy(isLoading = true, error = null, warning = null, message = null)
         viewModelScope.launch {
             try {
                 val response = getClientCodeUseCase(_state.value.code)
@@ -196,7 +196,7 @@ class RegisterViewModel @Inject constructor(
 
     fun register() {
         _state.value =
-            _state.value.copy(isLoading = true, message = null, error = null, warning = null)
+            _state.value.copy(isLoading = true, error = null, warning = null, message = null)
         viewModelScope.launch {
             val newClient = NewClient(
                 codigo = _state.value.code,

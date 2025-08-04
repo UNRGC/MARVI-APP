@@ -1,4 +1,4 @@
-package com.marvilanundry.marvi.data.remote
+package com.marvilanundry.marvi.data.dto
 
 import com.marvilanundry.marvi.domain.model.Email
 import kotlinx.serialization.Serializable
