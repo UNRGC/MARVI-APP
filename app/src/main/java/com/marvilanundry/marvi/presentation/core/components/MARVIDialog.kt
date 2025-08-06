@@ -52,15 +52,17 @@ private fun MARVIDialogBase(
         Column(
             modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LottieAnimation(
-                composition,
-                modifier = Modifier.size(128.dp),
-                contentScale = ContentScale.Crop,
-                iterations = if (infinite) LottieConstants.IterateForever else 1,
-                clipSpec = if (!infinite) LottieClipSpec.Frame(
-                    min = 24, max = 90
-                ) else null
-            )
+            if (composition != null) {
+                LottieAnimation(
+                    composition,
+                    modifier = Modifier.size(128.dp),
+                    contentScale = ContentScale.Crop,
+                    iterations = if (infinite) LottieConstants.IterateForever else 1,
+                    clipSpec = if (!infinite) LottieClipSpec.Frame(
+                        min = 24, max = 90
+                    ) else null
+                )
+            }
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.primary,
@@ -98,10 +100,11 @@ private fun MARVIDialogBase(
     }
 }
 
-enum class MARVIDialogType(val lottieRes: Int, val infinite: Boolean) {
+enum class MARVIDialogType(val lottieRes: Int?, val infinite: Boolean) {
     LOADING(R.raw.loader, true), ERROR(R.raw.error, false), SUCCESS(R.raw.success, false), QUESTION(
         R.raw.question, false
-    )
+    ),
+    INFO(null, false)
 }
 
 @Composable
@@ -114,7 +117,11 @@ fun MARVIDialog(
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(type.lottieRes))
+    var composition: LottieComposition? = null
+
+    if (type.lottieRes != null) {
+        composition = rememberLottieComposition(LottieCompositionSpec.RawRes(type.lottieRes)).value
+    }
 
     Dialog(
         onDismissRequest = if (type == MARVIDialogType.LOADING) ({}) else onDismiss,

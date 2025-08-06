@@ -7,6 +7,7 @@ import com.marvilanundry.marvi.data.dto.LoginDto
 import com.marvilanundry.marvi.data.dto.MessageDto
 import com.marvilanundry.marvi.data.dto.NewClientDto
 import com.marvilanundry.marvi.data.dto.OrderDto
+import com.marvilanundry.marvi.data.dto.OrdersDto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -98,6 +99,16 @@ class ApiService @Inject constructor() {
     // Seguimiento de pedidos
     suspend fun getOrderById(order: Int): OrderDto {
         val response = client.get("https://marvi-api.onrender.com/orders/$order")
+        return handleResponse(response)
+    }
+
+    // Historial de pedidos
+    suspend fun getOrdersByClient(clientId: Int, search: String? = null): List<OrdersDto> {
+        val response = client.get("https://marvi-api.onrender.com/orders/client/search?id_cliente=$clientId") {
+            search?.let {
+                url.parameters.append("busqueda", it)
+            }
+        }
         return handleResponse(response)
     }
 }

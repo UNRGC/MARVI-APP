@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marvilanundry.marvi.R
-import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
 import com.marvilanundry.marvi.presentation.core.components.MARVIBottomNavigationBar
 import com.marvilanundry.marvi.presentation.core.components.MARVIButton
@@ -117,7 +116,10 @@ fun SectionHeader(iconRes: Int, title: String) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = title, style = MaterialTheme.typography.titleLarge
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -204,9 +206,6 @@ fun FollowScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                 keyboardType = KeyboardType.Number,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        coroutineScope.launch {
-                            scrollState.animateScrollTo(scrollState.maxValue)
-                        }
                         homeViewModel.followOrder()
                     })
             )
@@ -216,9 +215,6 @@ fun FollowScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                 enabled = homeViewModelState.isFollowEnabled,
                 message = stringResource(id = R.string.marvi_follow_button_message),
                 onClick = {
-                    coroutineScope.launch {
-                        scrollState.animateScrollTo(scrollState.maxValue)
-                    }
                     homeViewModel.followOrder()
                 })
         }
@@ -227,9 +223,16 @@ fun FollowScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
             textAlign = TextAlign.Center
         )
         val currentStatusIndex =
-            statusItems.indexOfFirst { it.title == homeViewModelState.order?.estado }
+            statusItems.indexOfFirst { it.title == homeViewModelState.followedOrder?.estado }
         statusItems.forEachIndexed { index, item ->
             val ready = index <= currentStatusIndex && currentStatusIndex != -1
+
+            if (ready) {
+                LocalFocusManager.current.clearFocus()
+                coroutineScope.launch {
+                    scrollState.animateScrollTo(scrollState.maxValue)
+                }
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -283,7 +286,9 @@ fun FollowScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
 }
 
 @Composable
-fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
+fun OrdersScreen(
+    homeViewModel: HomeViewModel, homeViewModelState: HomeUiState
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -305,85 +310,107 @@ fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                     value = homeViewModelState.searchInput,
                     placeholder = "Buscar en pedidos",
                     keyboardType = KeyboardType.Uri,
-                    onValueChange = { homeViewModel.onSearchChange(it) })
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            homeViewModel.getOrders()
+                        }),
+                    onValueChange = {
+                        homeViewModel.onSearchChange(it)
+                    })
                 MARVIButton(
                     modifier = Modifier.size(48.dp),
                     type = MARVIButtonType.ICON,
                     iconRes = R.drawable.ic_search,
-                    onClick = {})
+                    onClick = {
+                        homeViewModel.getOrders()
+                    })
             }
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(10) { index ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .background(
-                            color = CustomColors.backgroundVariant,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
+        if (homeViewModelState.orders != null && homeViewModelState.orders.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(homeViewModelState.orders.size) { index ->
+                    val order = homeViewModelState.orders[index]
+                    Row(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(MaterialTheme.shapes.small)
-                            .background(MaterialTheme.colorScheme.secondary),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_box2),
-                            contentDescription = "Orders",
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "#${index + 1000}", fontWeight = FontWeight.Bold
+                            .fillMaxWidth()
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = MaterialTheme.shapes.small
                             )
-                            Box(
-                                modifier = Modifier
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.outline)
-                                    .padding(8.dp, 4.dp), contentAlignment = Alignment.Center
+                            .background(
+                                color = CustomColors.backgroundVariant,
+                                shape = MaterialTheme.shapes.small
+                            )
+                            .padding(16.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }) {
+                                homeViewModel.getOrder(order.id_pedido)
+                            },
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .background(MaterialTheme.colorScheme.secondary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_box2),
+                                contentDescription = "Orders",
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "$150.00", style = MaterialTheme.typography.bodySmall
+                                    text = "#${order.id_pedido}", fontWeight = FontWeight.Bold
                                 )
+                                Box(
+                                    modifier = Modifier
+                                        .clip(MaterialTheme.shapes.small)
+                                        .background(MaterialTheme.colorScheme.outline)
+                                        .padding(8.dp, 4.dp), contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "$${order.total}",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
                             }
+                            Text(
+                                text = order.fecha_pedido,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = order.detalles,
+                                color = CustomColors.placeholderColor,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
                         }
-                        Text(
-                            text = "29/07/2025", style = MaterialTheme.typography.bodySmall
-                        )
-                        Text(
-                            text = "Lavado normal de 10 prendas y secado de 5 prendas",
-                            color = CustomColors.placeholderColor,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
                     }
                 }
             }
+        } else {
+            Text(
+                text = "No se encontraron pedidos", textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -477,7 +504,7 @@ fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
 }
 
 @Composable
-fun AccountScreen(client: Client?) {
+fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
 
     ColumnScrollable(
         paddingValues = PaddingValues(24.dp, 24.dp, 24.dp, 16.dp)
@@ -497,7 +524,7 @@ fun AccountScreen(client: Client?) {
         Container {
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_code),
-                value = client?.codigo ?: "",
+                value = homeViewModelState.client?.codigo ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_code_placeholder),
                 keyboardType = KeyboardType.Text,
@@ -506,7 +533,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = {})
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_name),
-                value = client?.nombre ?: "",
+                value = homeViewModelState.client?.nombre ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_name_placeholder),
                 keyboardType = KeyboardType.Text,
@@ -515,7 +542,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = { })
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_first_surname),
-                value = client?.primer_apellido ?: "",
+                value = homeViewModelState.client?.primer_apellido ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_first_surname_placeholder),
                 keyboardType = KeyboardType.Text,
@@ -524,7 +551,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = {})
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_second_surname),
-                value = client?.segundo_apellido ?: "",
+                value = homeViewModelState.client?.segundo_apellido ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_second_surname_placeholder),
                 keyboardType = KeyboardType.Text,
@@ -533,7 +560,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = {})
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_phone),
-                value = client?.telefono ?: "",
+                value = homeViewModelState.client?.telefono ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_phone_placeholder),
                 keyboardType = KeyboardType.Phone,
@@ -543,7 +570,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = {})
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_email),
-                value = client?.correo ?: "",
+                value = homeViewModelState.client?.correo ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_email_placeholder),
                 keyboardType = KeyboardType.Email,
@@ -552,7 +579,7 @@ fun AccountScreen(client: Client?) {
                 onValueChange = {})
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_password),
-                value = client?.contrasena ?: "",
+                value = homeViewModelState.client?.contrasena ?: "",
                 readOnly = true,
                 placeholder = stringResource(id = R.string.marvi_register_password_placeholder),
                 trailingIcon = {
@@ -596,17 +623,23 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
     val showDialogLoading = homeViewModelState.isLoading
     val message = homeViewModelState.message?.split(",", limit = 2)
     val error = homeViewModelState.error?.split(",", limit = 2)
-    val client = sharedViewModel.client.value
+    val order = homeViewModelState.order
+    val orderDetails = homeViewModelState.orders?.find { it.id_pedido == order?.id_pedido }?.detalles
 
     var showDialogQuestion by remember { mutableStateOf(false) }
     var showDialogSuccess by remember { mutableStateOf(false) }
     var showDialogError by remember { mutableStateOf(false) }
+    var showDialogInfo by remember { mutableStateOf(false) }
     var disableScreen by remember { mutableStateOf(false) }
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
 
     BackHandler(true) {
         showDialogQuestion = true
+    }
+
+    LaunchedEffect(Unit) {
+        homeViewModel.setClient(sharedViewModel.client.value)
     }
 
     LaunchedEffect(homeViewModelState.isLoading) {
@@ -620,6 +653,11 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                 dialogTitle = error[0]
                 dialogMessage = if (error.size > 1) error[1].trim() else error[0]
                 showDialogError = true
+            }
+
+            order != null -> {
+                dialogMessage = "Número de pedido: ${order.id_pedido}\nDetalles: ${orderDetails ?: "N/A"}"
+                showDialogInfo = true
             }
         }
     }
@@ -675,6 +713,20 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                     showDialogError = false
                 })
         }
+
+        showDialogInfo -> {
+            MARVIDialog(
+                type = MARVIDialogType.INFO,
+                title = "Información del pedido",
+                message = dialogMessage,
+                confirmButtonText = "Aceptar",
+                onConfirm = {
+                    showDialogInfo = false
+                },
+                onDismiss = {
+                    showDialogInfo = false
+                })
+        }
     }
 
     Scaffold(
@@ -703,7 +755,7 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                     0 -> FollowScreen(homeViewModel, homeViewModelState)
                     1 -> OrdersScreen(homeViewModel, homeViewModelState)
                     2 -> ToQuoteScreen(homeViewModel, homeViewModelState)
-                    3 -> AccountScreen(client)
+                    3 -> AccountScreen(homeViewModel, homeViewModelState)
                 }
 
                 if (disableScreen) Box(

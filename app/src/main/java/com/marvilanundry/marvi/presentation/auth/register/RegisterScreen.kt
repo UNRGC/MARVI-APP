@@ -327,7 +327,7 @@ fun RegisterScreen(
                 Text(
                     text = stringResource(id = R.string.marvi_register_subtitle),
                     color = CustomColors.textColor,
-                    textAlign = TextAlign.Justify
+                    textAlign = TextAlign.Center
                 )
                 Spacer(
                     modifier = Modifier.height(16.dp)

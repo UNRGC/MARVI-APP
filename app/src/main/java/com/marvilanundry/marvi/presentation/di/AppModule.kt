@@ -10,6 +10,7 @@ import com.marvilanundry.marvi.domain.repository.OrderRepository
 import com.marvilanundry.marvi.domain.usecase.GetApiWakeUpUseCase
 import com.marvilanundry.marvi.domain.usecase.GetClientCodeUseCase
 import com.marvilanundry.marvi.domain.usecase.GetOrderByIdUseCase
+import com.marvilanundry.marvi.domain.usecase.GetOrdersByClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostLoginClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostNewClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostResetPasswordClientUseCase
@@ -56,6 +57,11 @@ object AppModule {
     @Singleton
     fun provideGetOrderByIdUseCase(repo: OrderRepository): GetOrderByIdUseCase =
         GetOrderByIdUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun provideGetOrdersByClientUseCase(repo: OrderRepository): GetOrdersByClientUseCase =
+        GetOrdersByClientUseCase(repo)
 
     @Provides
     @Singleton

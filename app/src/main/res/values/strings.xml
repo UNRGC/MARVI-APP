@@ -54,7 +54,7 @@
     <string name="marvi_register_dialog_error_confirm_button">Aceptar</string>
 
     <string name="marvi_recovery_title">¿Olvidaste tu contraseña?</string>
-    <string name="marvi_recovery_subtitle">¡No te preocupes! nos pasa a todos, te enviaremos un enlace de restablecimiento a tu correo electrónico.</string>
+    <string name="marvi_recovery_subtitle">¡No te preocupes! te enviaremos un enlace de restablecimiento a tu correo electrónico.</string>
     <string name="marvi_recovery_email">Correo electrónico*</string>
     <string name="marvi_recovery_email_placeholder">Ingresa tu correo electrónico</string>
     <string name="marvi_recovery_tip">Si no ves el correo en unos minutos, revisa tu bandeja de spam o correos no deseados.</string>
