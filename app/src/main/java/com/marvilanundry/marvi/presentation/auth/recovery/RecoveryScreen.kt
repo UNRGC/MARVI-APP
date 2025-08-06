@@ -116,10 +116,6 @@ fun RecoveryScreen(
                 onConfirm = {
                     showDialogSuccess = false
                     onNavigateToLogin()
-                },
-                onDismiss = {
-                    showDialogSuccess = false
-                    onNavigateToLogin()
                 })
         }
 

@@ -2,6 +2,7 @@ package com.marvilanundry.marvi.presentation.auth.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -33,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,14 +55,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marvilanundry.marvi.R
 import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
 import com.marvilanundry.marvi.presentation.core.components.MARVIBottomNavigationBar
 import com.marvilanundry.marvi.presentation.core.components.MARVIButton
 import com.marvilanundry.marvi.presentation.core.components.MARVIButtonType
+import com.marvilanundry.marvi.presentation.core.components.MARVIDialog
+import com.marvilanundry.marvi.presentation.core.components.MARVIDialogType
 import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 import com.marvilanundry.marvi.ui.theme.CustomColors
 import kotlinx.coroutines.launch
@@ -84,11 +89,15 @@ fun Container(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-fun ColumnScrollable(paddingValues: PaddingValues, content: @Composable ColumnScope.() -> Unit) {
+fun ColumnScrollable(
+    scrollState: ScrollState = rememberScrollState(),
+    paddingValues: PaddingValues,
+    content: @Composable ColumnScope.() -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -121,6 +130,7 @@ fun ClearableTextField(
     placeholder: String,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
     maxLength: Int = 100
 ) {
@@ -144,6 +154,7 @@ fun ClearableTextField(
             )
         },
         keyboardType = keyboardType,
+        keyboardActions = keyboardActions,
         singleLine = singleLine,
         maxLength = maxLength,
         onValueChange = onValueChange
@@ -153,7 +164,9 @@ fun ClearableTextField(
 data class Status(val icon: Int, val title: String, val message: String)
 
 @Composable
-fun MainScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
+fun FollowScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
     val statusItems = listOf(
         Status(
             R.drawable.ic_shop_window,
@@ -171,7 +184,7 @@ fun MainScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
     )
 
     ColumnScrollable(
-        paddingValues = PaddingValues(24.dp, 24.dp, 24.dp, 16.dp)
+        scrollState = scrollState, paddingValues = PaddingValues(24.dp, 24.dp, 24.dp, 16.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
@@ -186,33 +199,49 @@ fun MainScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
             ClearableTextField(
                 label = stringResource(id = R.string.marvi_follow_order),
                 value = homeViewModelState.orderInput,
+                onValueChange = { homeViewModel.onOrderChange(it) },
                 placeholder = stringResource(id = R.string.marvi_follow_order_placeholder),
                 keyboardType = KeyboardType.Number,
-                onValueChange = { homeViewModel.onOrderChange(it) },
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        coroutineScope.launch {
+                            scrollState.animateScrollTo(scrollState.maxValue)
+                        }
+                        homeViewModel.followOrder()
+                    })
             )
             MARVIButton(
                 text = stringResource(id = R.string.marvi_follow_button),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = homeViewModelState.isFollowEnabled,
-                message = stringResource(id = R.string.marvi_follow_button_message)
-            ) { }
+                message = stringResource(id = R.string.marvi_follow_button_message),
+                onClick = {
+                    coroutineScope.launch {
+                        scrollState.animateScrollTo(scrollState.maxValue)
+                    }
+                    homeViewModel.followOrder()
+                })
         }
         Text(
             text = stringResource(id = R.string.marvi_follow_status_title),
             textAlign = TextAlign.Center
         )
-        statusItems.forEach { item ->
+        val currentStatusIndex =
+            statusItems.indexOfFirst { it.title == homeViewModelState.order?.estado }
+        statusItems.forEachIndexed { index, item ->
+            val ready = index <= currentStatusIndex && currentStatusIndex != -1
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start)
             ) {
                 Icon(
-                    painter = if (homeViewModelState.message != null) painterResource(id = R.drawable.ic_check_circle_fill) else painterResource(
+                    painter = if (ready) painterResource(id = R.drawable.ic_check_circle_fill) else painterResource(
                         id = R.drawable.ic_circle
                     ),
                     contentDescription = null,
-                    tint = if (homeViewModelState.message != null) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
+                    tint = if (ready) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
                 )
                 Row(
                     modifier = Modifier
@@ -234,16 +263,16 @@ fun MainScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
                         painter = painterResource(item.icon),
                         contentDescription = item.title,
                         modifier = Modifier.size(24.dp),
-                        tint = if (homeViewModelState.message != null) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
+                        tint = if (ready) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
                     )
                     Column {
                         Text(
                             text = item.title,
-                            color = if (homeViewModelState.message != null) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
+                            color = if (ready) MaterialTheme.colorScheme.primary else CustomColors.placeholderColor
                         )
                         Text(
                             text = item.message,
-                            color = if (homeViewModelState.message != null) CustomColors.textColor else CustomColors.placeholderColor,
+                            color = if (ready) CustomColors.textColor else CustomColors.placeholderColor,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -559,18 +588,93 @@ fun AccountScreen(client: Client?) {
 
 @Composable
 fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit = {}) {
-    val homeViewModel: HomeViewModel = viewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val homeViewModelState by homeViewModel.state.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
     val coroutineScope = rememberCoroutineScope()
+    val showDialogLoading = homeViewModelState.isLoading
+    val message = homeViewModelState.message?.split(",", limit = 2)
+    val error = homeViewModelState.error?.split(",", limit = 2)
     val client = sharedViewModel.client.value
 
+    var showDialogQuestion by remember { mutableStateOf(false) }
+    var showDialogSuccess by remember { mutableStateOf(false) }
+    var showDialogError by remember { mutableStateOf(false) }
     var disableScreen by remember { mutableStateOf(false) }
+    var dialogTitle by remember { mutableStateOf("") }
+    var dialogMessage by remember { mutableStateOf("") }
 
     BackHandler(true) {
-        disableScreen = true
-        onNavigateToLogin()
+        showDialogQuestion = true
+    }
+
+    LaunchedEffect(homeViewModelState.isLoading) {
+        when {
+            message != null -> {
+                dialogMessage = if (message.size > 1) message[1].trim() else message[0]
+                showDialogSuccess = true
+            }
+
+            error != null -> {
+                dialogTitle = error[0]
+                dialogMessage = if (error.size > 1) error[1].trim() else error[0]
+                showDialogError = true
+            }
+        }
+    }
+
+    when {
+        showDialogLoading -> {
+            MARVIDialog(
+                type = MARVIDialogType.LOADING,
+                title = "Cargando...",
+                message = "por favor, espera mientras se procesa tu información"
+            )
+        }
+
+        showDialogQuestion -> {
+            MARVIDialog(
+                type = MARVIDialogType.QUESTION,
+                title = "Cerrar sesión",
+                message = "¿Deseas cerrar sesión?",
+                confirmButtonText = "Si",
+                dismissButtonText = "No",
+                onConfirm = {
+                    disableScreen = true
+                    showDialogQuestion = false
+                    onNavigateToLogin()
+                },
+                onDismiss = {
+                    showDialogQuestion = false
+                })
+        }
+
+        showDialogSuccess -> {
+            MARVIDialog(
+                type = MARVIDialogType.SUCCESS,
+                title = "Éxito",
+                message = dialogMessage,
+                confirmButtonText = "Aceptar",
+                onConfirm = {
+                    disableScreen = true
+                    showDialogSuccess = false
+                })
+        }
+
+        showDialogError -> {
+            MARVIDialog(
+                type = MARVIDialogType.ERROR,
+                title = dialogTitle,
+                message = dialogMessage,
+                confirmButtonText = "Aceptar",
+                onConfirm = {
+                    showDialogError = false
+                },
+                onDismiss = {
+                    showDialogError = false
+                })
+        }
     }
 
     Scaffold(
@@ -596,7 +700,7 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                     }, contentAlignment = Alignment.TopCenter
             ) {
                 when (page) {
-                    0 -> MainScreen(homeViewModel, homeViewModelState)
+                    0 -> FollowScreen(homeViewModel, homeViewModelState)
                     1 -> OrdersScreen(homeViewModel, homeViewModelState)
                     2 -> ToQuoteScreen(homeViewModel, homeViewModelState)
                     3 -> AccountScreen(client)

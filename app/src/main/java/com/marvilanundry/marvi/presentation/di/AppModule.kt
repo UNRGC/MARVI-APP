@@ -3,10 +3,13 @@ package com.marvilanundry.marvi.presentation.di
 import com.marvilanundry.marvi.data.remote.ApiService
 import com.marvilanundry.marvi.data.repository.ApiRepositoryImpl
 import com.marvilanundry.marvi.data.repository.ClientRepositoryImpl
+import com.marvilanundry.marvi.data.repository.OrderRepositoryImpl
 import com.marvilanundry.marvi.domain.repository.ApiRepository
 import com.marvilanundry.marvi.domain.repository.ClientRepository
+import com.marvilanundry.marvi.domain.repository.OrderRepository
 import com.marvilanundry.marvi.domain.usecase.GetApiWakeUpUseCase
 import com.marvilanundry.marvi.domain.usecase.GetClientCodeUseCase
+import com.marvilanundry.marvi.domain.usecase.GetOrderByIdUseCase
 import com.marvilanundry.marvi.domain.usecase.PostLoginClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostNewClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostResetPasswordClientUseCase
@@ -32,6 +35,10 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideOrderRepository(api: ApiService): OrderRepository = OrderRepositoryImpl(api)
+
+    @Provides
+    @Singleton
     fun provideClientRepository(api: ApiService): ClientRepository = ClientRepositoryImpl(api)
 
     // Casos de uso
@@ -44,6 +51,11 @@ object AppModule {
     @Singleton
     fun provideGetClientCodeUseCase(repo: ClientRepository): GetClientCodeUseCase =
         GetClientCodeUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun provideGetOrderByIdUseCase(repo: OrderRepository): GetOrderByIdUseCase =
+        GetOrderByIdUseCase(repo)
 
     @Provides
     @Singleton
