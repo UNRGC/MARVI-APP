@@ -8,6 +8,7 @@ import com.marvilanundry.marvi.data.dto.MessageDto
 import com.marvilanundry.marvi.data.dto.NewClientDto
 import com.marvilanundry.marvi.data.dto.OrderDto
 import com.marvilanundry.marvi.data.dto.OrdersDto
+import com.marvilanundry.marvi.data.dto.ServicesDto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -109,6 +110,12 @@ class ApiService @Inject constructor() {
                 url.parameters.append("busqueda", it)
             }
         }
+        return handleResponse(response)
+    }
+
+    // Cotización de servicios
+    suspend fun getServices(): List<ServicesDto> {
+        val response = client.get("https://marvi-api.onrender.com/services?columna_orden=nombre&orden=ASC&limit=1000")
         return handleResponse(response)
     }
 }

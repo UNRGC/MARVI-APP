@@ -42,7 +42,9 @@ fun NavigationWrapper() {
             }, onNavigateToForgot = {
                 navController.navigate(Recovery)
             }, onNavigateToHome = {
-                navController.navigate(Home)
+                navController.navigate(Home) {
+                    popUpTo(Login) { inclusive = true }
+                }
             })
         }
         composable<Register>(enterTransition = {
@@ -84,7 +86,9 @@ fun NavigationWrapper() {
         }) {
             HomeScreen(
                 sharedViewModel = sharedViewModel, onNavigateToLogin = {
-                    navController.popBackStack()
+                    navController.navigate(Login) {
+                        popUpTo(Home) { inclusive = true }
+                    }
                 })
         }
     }

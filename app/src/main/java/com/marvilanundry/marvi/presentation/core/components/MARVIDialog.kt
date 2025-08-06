@@ -35,6 +35,7 @@ import com.marvilanundry.marvi.ui.theme.CustomColors
 private fun MARVIDialogBase(
     title: String,
     message: String,
+    textAlign: TextAlign,
     composition: LottieComposition?,
     infinite: Boolean,
     dismissButtonText: String,
@@ -52,17 +53,15 @@ private fun MARVIDialogBase(
         Column(
             modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (composition != null) {
-                LottieAnimation(
-                    composition,
-                    modifier = Modifier.size(128.dp),
-                    contentScale = ContentScale.Crop,
-                    iterations = if (infinite) LottieConstants.IterateForever else 1,
-                    clipSpec = if (!infinite) LottieClipSpec.Frame(
-                        min = 24, max = 90
-                    ) else null
-                )
-            }
+            LottieAnimation(
+                composition,
+                modifier = Modifier.size(128.dp),
+                contentScale = ContentScale.Crop,
+                iterations = if (infinite) LottieConstants.IterateForever else 1,
+                clipSpec = if (!infinite) LottieClipSpec.Frame(
+                    min = 24, max = 90
+                ) else null
+            )
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.primary,
@@ -74,7 +73,7 @@ private fun MARVIDialogBase(
             Text(
                 text = message,
                 color = CustomColors.textColor,
-                textAlign = TextAlign.Center,
+                textAlign = textAlign,
                 modifier = Modifier.fillMaxWidth()
             )
             if (confirmButtonText.isNotEmpty()) {
@@ -100,11 +99,10 @@ private fun MARVIDialogBase(
     }
 }
 
-enum class MARVIDialogType(val lottieRes: Int?, val infinite: Boolean) {
+enum class MARVIDialogType(val lottieRes: Int, val infinite: Boolean) {
     LOADING(R.raw.loader, true), ERROR(R.raw.error, false), SUCCESS(R.raw.success, false), QUESTION(
         R.raw.question, false
-    ),
-    INFO(null, false)
+    )
 }
 
 @Composable
@@ -112,16 +110,15 @@ fun MARVIDialog(
     type: MARVIDialogType,
     title: String,
     message: String,
+    textAlign: TextAlign = TextAlign.Center,
     confirmButtonText: String = "",
     dismissButtonText: String = "",
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
-    var composition: LottieComposition? = null
-
-    if (type.lottieRes != null) {
-        composition = rememberLottieComposition(LottieCompositionSpec.RawRes(type.lottieRes)).value
-    }
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(type.lottieRes)
+    )
 
     Dialog(
         onDismissRequest = if (type == MARVIDialogType.LOADING) ({}) else onDismiss,
@@ -133,6 +130,7 @@ fun MARVIDialog(
         MARVIDialogBase(
             title = title,
             message = message,
+            textAlign = textAlign,
             composition = composition,
             infinite = type.infinite,
             confirmButtonText = confirmButtonText,
