@@ -109,19 +109,23 @@ fun ClearableTextField(
         modifier = modifier,
         value = value,
         placeholder = placeholder,
-        trailingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_x),
-                contentDescription = label,
-                modifier = Modifier
-                    .size(20.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }) {
-                        onValueChange("")
-                    },
-                tint = MaterialTheme.colorScheme.outlineVariant
-            )
+        trailingIcon = if (value.isNotBlank()) {
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_x),
+                    contentDescription = label,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }) {
+                            onValueChange("")
+                        },
+                    tint = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+        } else {
+            null
         },
         keyboardType = keyboardType,
         keyboardActions = keyboardActions,

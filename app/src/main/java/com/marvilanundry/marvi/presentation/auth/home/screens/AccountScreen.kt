@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,7 +29,6 @@ import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 
 @Composable
 fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
-
     ColumnScrollable(
         paddingValues = PaddingValues(24.dp, 24.dp, 24.dp, 16.dp)
     ) {

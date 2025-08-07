@@ -21,35 +21,41 @@ class HomeViewModel @Inject constructor(
     private val getOrderByIdUseCase: GetOrderByIdUseCase,
     private val getOrdersByClientUseCase: GetOrdersByClientUseCase,
     private val getServicesUseCase: GetServicesUseCase
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state
 
     fun onOrderChange(order: String) {
         _state.update { currentState ->
             val stateWithOrderChanged = currentState.copy(orderInput = order, followedOrder = null)
-
-            val isFollowEnabled = order.isNotBlank()
+            val order = order.toIntOrNull() ?: 0
+            val isFollowEnabled = order > 0
 
             stateWithOrderChanged.copy(
                 isFollowEnabled = isFollowEnabled
             )
         }
     }
+
     fun onSearchChange(search: String) {
         _state.update { currentState ->
             currentState.copy(searchInput = search)
         }
         if (search.isBlank()) getOrders()
     }
+
     fun onToQuoteChange(toQuote: String) {
         _state.update { currentState ->
-            val stateWithToQuoteChanged = currentState.copy(toQuoteInput = toQuote)
-
-            val isCalculationEnabled = toQuote.isNotBlank()
-
-            stateWithToQuoteChanged.copy(
-                isCalculationEnabled = isCalculationEnabled
+            val toQuoteInput = toQuote.toIntOrNull() ?: 0
+            val selectedService = currentState.services?.getOrNull(currentState.service)
+            val total = if (selectedService != null) {
+                toQuoteInput * selectedService.precio
+            } else {
+                0.0
+            }
+            currentState.copy(
+                toQuoteInput = toQuote,
+                toQuote = String.format("%.2f", total)
             )
         }
     }
@@ -106,18 +112,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setService(service: Int) {
-        _state.value = _state.value.copy(service = service, toQuoteInput = "", toQuote = "0.00", error = null, message = null)
-    }
-
-    fun calculateService() {
-        val toQuoteInput = _state.value.toQuoteInput.toIntOrNull() ?: return
-        val toQuoteServices = _state.value.service?.let { _state.value.services?.get(it) }?.precio ?: return
-        val toQuote = toQuoteInput * toQuoteServices
-        if (toQuoteInput <= 0) {
-            _state.value = _state.value.copy(error = "La cantidad debe ser mayor a 0")
-            return
-        }
-        _state.value = _state.value.copy(toQuote = toQuote.toString(), error = null, message = null)
+        _state.value = _state.value.copy(
+            service = service, error = null, message = null
+        )
     }
 
     fun setClient(client: Client?) {
@@ -128,8 +125,10 @@ class HomeViewModel @Inject constructor(
         getServices()
     }
 
-    fun resetState() {
-        _state.value = HomeUiState().copy(searchInput = _state.value.searchInput, client = _state.value.client, orders = _state.value.orders)
+    fun resetOrder() {
+        _state.update { currentState ->
+            currentState.copy(order = null, message = null, error = null)
+        }
     }
 }
 
@@ -144,9 +143,8 @@ data class HomeUiState(
     val followedOrder: Order? = null,
     val order: Order? = null,
     val orders: List<Orders>? = null,
-    val service: Int? = null,
+    val service: Int = 0,
     val services: List<Services>? = null,
     val isFollowEnabled: Boolean = false,
-    val isCalculationEnabled: Boolean = false,
     val isLoading: Boolean = false
 )

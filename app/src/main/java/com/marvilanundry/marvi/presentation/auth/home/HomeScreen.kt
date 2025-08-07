@@ -86,7 +86,7 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
             order != null -> {
                 val orderDetails = homeViewModelState.orders?.find { it.id_pedido == order.id_pedido }?.detalles
 
-                dialogMessage = "Número de pedido: ${order.id_pedido}\nFecha de creación: ${order.fecha_pedido}\nFecha de entrega: ${order.fecha_entrega}\nDetalles: ${orderDetails ?: "N/A"}\nTotal: $${order.total}"
+                dialogMessage = "Número de pedido: ${order.id_pedido}\nFecha de creación: ${order.fecha_pedido}\nFecha de entrega: ${order.fecha_entrega}\nDetalles: ${orderDetails ?: "N/A"}\nTotal: $${String.format("%.2f", order.total)}"
             }
         }
     }
@@ -151,10 +151,10 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                 textAlign = TextAlign.Start,
                 confirmButtonText = "Cerrar",
                 onConfirm = {
-                    homeViewModel.resetState()
+                    homeViewModel.resetOrder()
                 },
                 onDismiss = {
-                    homeViewModel.resetState()
+                    homeViewModel.resetOrder()
                 })
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +31,6 @@ import com.marvilanundry.marvi.presentation.auth.home.components.ClearableTextFi
 import com.marvilanundry.marvi.presentation.auth.home.components.ColumnScrollable
 import com.marvilanundry.marvi.presentation.auth.home.components.Container
 import com.marvilanundry.marvi.presentation.auth.home.components.SectionHeader
-import com.marvilanundry.marvi.presentation.core.components.MARVIButton
 
 @Composable
 fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
@@ -44,34 +44,40 @@ fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             Text(
                 text = "Tipo de servicio"
             )
-            if (homeViewModelState.services != null && homeViewModelState.services.isNotEmpty())
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                items(homeViewModelState.services.size) { index ->
-                    val service = homeViewModelState.services[index]
-                    FilterChip(
-                        selected = homeViewModelState.service == index,
-                        onClick = {
-                            homeViewModel.setService(index)
-                        },
-                        label = {
-                            Text(
-                                text = "${service.nombre} (${service.nombre_unidad})",
+            if (homeViewModelState.services != null && homeViewModelState.services.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(homeViewModelState.services.size) { index ->
+                        val service = homeViewModelState.services[index]
+                        FilterChip(
+                            selected = homeViewModelState.service == index,
+                            onClick = {
+                                homeViewModel.onToQuoteChange("")
+                                homeViewModel.setService(index)
+                            },
+                            label = {
+                                Text(
+                                    text = "${service.nombre} (${service.nombre_unidad})",
+                                )
+                            },
+                            shape = MaterialTheme.shapes.small,
+                            border = null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                labelColor = MaterialTheme.colorScheme.onSecondary,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                             )
-                        },
-                        shape = MaterialTheme.shapes.small,
-                        border = null,
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            labelColor = MaterialTheme.colorScheme.onSecondary,
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                         )
-                    )
+                    }
                 }
+            } else {
+                Text(
+                    text = "No hay servicios disponibles"
+                )
             }
             ClearableTextField(
                 label = "Ingresa la cantidad",
@@ -80,14 +86,6 @@ fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Number,
                 onValueChange = { homeViewModel.onToQuoteChange(it) },
             )
-            MARVIButton(
-                text = "Calcular",
-                modifier = Modifier.fillMaxWidth(),
-                enabled = homeViewModelState.isCalculationEnabled,
-                message = "La cantidad debe ser valida",
-            ) {
-                homeViewModel.calculateService()
-            }
         }
         Container {
             Row(
@@ -107,7 +105,8 @@ fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = homeViewModelState.toQuote, color = MaterialTheme.colorScheme.onPrimary
+                        text = "$${homeViewModelState.toQuote}",
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
