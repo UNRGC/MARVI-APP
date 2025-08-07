@@ -141,7 +141,7 @@ fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                                         .padding(8.dp, 4.dp), contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "$${String.format(Locale.US, "%.2f", order.total)}",
+                                        text = "$${String.format(Locale.getDefault(), "%.2f", order.total)}",
                                         style = MaterialTheme.typography.bodySmall
 
                                     )

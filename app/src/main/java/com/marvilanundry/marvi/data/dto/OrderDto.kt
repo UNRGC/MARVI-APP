@@ -29,16 +29,3 @@ fun OrderDto.toOrder(): Order = Order(
     total = total,
     activo = activo
 )
-
-fun Order.toOrderDto(): OrderDto = OrderDto(
-    id_pedido = id_pedido,
-    id_cliente = id_cliente,
-    cliente = cliente,
-    fecha_pedido = fecha_pedido,
-    fecha_entrega = fecha_entrega,
-    estado = estado,
-    observaciones = observaciones,
-    id_usuario = id_usuario,
-    total = total,
-    activo = activo
-)

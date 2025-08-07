@@ -9,12 +9,14 @@ import com.marvilanundry.marvi.data.dto.NewClientDto
 import com.marvilanundry.marvi.data.dto.OrderDto
 import com.marvilanundry.marvi.data.dto.OrdersDto
 import com.marvilanundry.marvi.data.dto.ServicesDto
+import com.marvilanundry.marvi.data.dto.UpdateClientDto
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -117,5 +119,17 @@ class ApiService @Inject constructor() {
     suspend fun getServices(): List<ServicesDto> {
         val response = client.get("https://marvi-api.onrender.com/services?columna_orden=nombre&orden=ASC&limit=1000")
         return handleResponse(response)
+    }
+
+    // Actualización de cliente
+    suspend fun putUpdateClient(updateClientDto: UpdateClientDto): String {
+        val response = client.put("https://marvi-api.onrender.com/clients") {
+            setBody(updateClientDto)
+            headers {
+                append("Content-Type", "application/json")
+            }
+        }
+        val messageDto = handleResponse<MessageDto>(response)
+        return messageDto.message
     }
 }

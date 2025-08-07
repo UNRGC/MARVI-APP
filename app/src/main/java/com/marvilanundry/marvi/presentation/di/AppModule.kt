@@ -17,6 +17,7 @@ import com.marvilanundry.marvi.domain.usecase.GetServicesUseCase
 import com.marvilanundry.marvi.domain.usecase.PostLoginClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostNewClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostResetPasswordClientUseCase
+import com.marvilanundry.marvi.domain.usecase.PutUpdateClientUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -89,4 +90,9 @@ object AppModule {
     @Singleton
     fun providePostLoginClientUseCase(repo: ClientRepository): PostLoginClientUseCase =
         PostLoginClientUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun providePutUpdateClientUseCase(repo: ClientRepository): PutUpdateClientUseCase =
+        PutUpdateClientUseCase(repo)
 }

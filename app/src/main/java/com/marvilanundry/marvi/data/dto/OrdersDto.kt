@@ -19,11 +19,3 @@ fun OrdersDto.toOrders(): Orders = Orders(
     detalles = detalles,
     total = total
 )
-
-fun Orders.toOrdersDto(): OrdersDto = OrdersDto(
-    id_pedido = id_pedido,
-    id_cliente = id_cliente,
-    fecha_pedido = fecha_pedido,
-    detalles = detalles,
-    total = total
-)

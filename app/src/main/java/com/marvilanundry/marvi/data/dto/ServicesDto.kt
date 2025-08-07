@@ -19,11 +19,3 @@ fun ServicesDto.toServices(): Services = Services(
     precio = precio,
     nombre_unidad = nombre_unidad
 )
-
-fun Services.toServicesDto(): ServicesDto = ServicesDto(
-    total = total,
-    codigo = codigo,
-    nombre = nombre,
-    precio = precio,
-    nombre_unidad = nombre_unidad
-)

@@ -5,10 +5,12 @@ import com.marvilanundry.marvi.data.dto.toClient
 import com.marvilanundry.marvi.data.dto.toEmailDto
 import com.marvilanundry.marvi.data.dto.toLoginDto
 import com.marvilanundry.marvi.data.dto.toNewClientDto
+import com.marvilanundry.marvi.data.dto.toUpdateClientDto
 import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.domain.model.Email
 import com.marvilanundry.marvi.domain.model.Login
 import com.marvilanundry.marvi.domain.model.NewClient
+import com.marvilanundry.marvi.domain.model.UpdateClient
 import com.marvilanundry.marvi.domain.repository.ClientRepository
 import javax.inject.Inject
 
@@ -26,5 +28,8 @@ class ClientRepositoryImpl @Inject constructor(
     }
     override suspend fun postLoginClient(login: Login): Client {
         return api.postLoginClient(login.toLoginDto()).toClient()
+    }
+    override suspend fun putUpdateClient(updateClient: UpdateClient): String {
+        return api.putUpdateClient(updateClient.toUpdateClientDto())
     }
 }
