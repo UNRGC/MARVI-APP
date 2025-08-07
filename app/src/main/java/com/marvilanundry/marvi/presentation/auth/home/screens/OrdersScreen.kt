@@ -19,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +38,7 @@ import com.marvilanundry.marvi.presentation.auth.home.components.SectionHeader
 import com.marvilanundry.marvi.presentation.core.components.MARVIButton
 import com.marvilanundry.marvi.presentation.core.components.MARVIButtonType
 import com.marvilanundry.marvi.ui.theme.CustomColors
+import java.util.Locale
 
 @Composable
 fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
@@ -141,8 +141,9 @@ fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                                         .padding(8.dp, 4.dp), contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "$${String.format("%.2f", order.total)}",
+                                        text = "$${String.format(Locale.US, "%.2f", order.total)}",
                                         style = MaterialTheme.typography.bodySmall
+
                                     )
                                 }
                             }

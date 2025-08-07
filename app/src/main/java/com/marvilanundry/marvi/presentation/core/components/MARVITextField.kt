@@ -35,7 +35,7 @@ private fun MARVITextFieldBase(
     labelContent: @Composable () -> Unit,
     modifier: Modifier,
     value: String,
-    readOnly: Boolean,
+    enabled: Boolean,
     placeholder: String,
     trailingIcon: @Composable (() -> Unit)?,
     visualTransformation: VisualTransformation,
@@ -61,7 +61,7 @@ private fun MARVITextFieldBase(
                     color = if (isFocused) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.outline,
                     shape = MaterialTheme.shapes.small
                 ),
-            readOnly = readOnly,
+            enabled = enabled,
             placeholder = {
                 Text(text = placeholder, color = CustomColors.placeholderColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
@@ -78,10 +78,13 @@ private fun MARVITextFieldBase(
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = CustomColors.backgroundVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                disabledContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
                 focusedTextColor = CustomColors.textColor,
                 unfocusedTextColor = CustomColors.textColor,
+                disabledTextColor = CustomColors.placeholderColor,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
             )
         )
     }
@@ -92,7 +95,7 @@ fun MARVITextField(
     label: String? = null,
     modifier: Modifier = Modifier.fillMaxWidth(),
     value: String,
-    readOnly: Boolean = false,
+    enabled: Boolean = true,
     placeholder: String,
     icon: Int? = null,
     iconDescription: String? = null,
@@ -127,7 +130,7 @@ fun MARVITextField(
         },
         modifier = modifier,
         value = value,
-        readOnly = readOnly,
+        enabled = enabled,
         placeholder = placeholder,
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,7 +23,6 @@ import com.marvilanundry.marvi.presentation.auth.home.components.ColumnScrollabl
 import com.marvilanundry.marvi.presentation.auth.home.components.Container
 import com.marvilanundry.marvi.presentation.auth.home.components.SectionHeader
 import com.marvilanundry.marvi.presentation.core.components.MARVIButton
-import com.marvilanundry.marvi.presentation.core.components.MARVIButtonType
 import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 
 @Composable
@@ -36,19 +34,12 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             SectionHeader(
                 iconRes = R.drawable.ic_person_vcard, title = "Información de la cuenta"
             )
-            MARVIButton(
-                text = "Editar información",
-                modifier = Modifier.fillMaxWidth(),
-                type = MARVIButtonType.SECONDARY,
-                enabled = true,
-                message = "Ya hay una edición en curso"
-            ) { }
         }
         Container {
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_code),
                 value = homeViewModelState.client?.codigo ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_code_placeholder),
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.None,
@@ -57,7 +48,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_name),
                 value = homeViewModelState.client?.nombre ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_name_placeholder),
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
@@ -66,7 +57,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_first_surname),
                 value = homeViewModelState.client?.primer_apellido ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_first_surname_placeholder),
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
@@ -75,7 +66,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_second_surname),
                 value = homeViewModelState.client?.segundo_apellido ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_second_surname_placeholder),
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
@@ -84,7 +75,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_phone),
                 value = homeViewModelState.client?.telefono ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_phone_placeholder),
                 keyboardType = KeyboardType.Phone,
                 capitalization = KeyboardCapitalization.None,
@@ -94,7 +85,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_email),
                 value = homeViewModelState.client?.correo ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_email_placeholder),
                 keyboardType = KeyboardType.Email,
                 capitalization = KeyboardCapitalization.None,
@@ -103,7 +94,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_password),
                 value = homeViewModelState.client?.contrasena ?: "",
-                readOnly = true,
+                enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_password_placeholder),
                 trailingIcon = {
                     Icon(
@@ -128,9 +119,11 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
             MARVIButton(
                 text = "Guardar cambios",
                 modifier = Modifier.fillMaxWidth(),
-                enabled = false,
+                enabled = homeViewModelState.isEditEnabled,
                 message = "No se han realizado cambios"
-            ) { }
+            ) {
+                homeViewModel.editEnabled(false)
+            }
         }
     }
 }

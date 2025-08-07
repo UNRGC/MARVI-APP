@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,20 +49,20 @@ class HomeViewModel @Inject constructor(
         _state.update { currentState ->
             val toQuoteInput = toQuote.toIntOrNull() ?: 0
             val selectedService = currentState.services?.getOrNull(currentState.service)
-            val total = if (selectedService != null) {
+            val total = if (selectedService != null && toQuoteInput > 0) {
                 toQuoteInput * selectedService.precio
             } else {
                 0.0
             }
             currentState.copy(
                 toQuoteInput = toQuote,
-                toQuote = String.format("%.2f", total)
+                toQuote = String.format(Locale.getDefault(), "%.2f", total)
             )
         }
     }
 
     fun followOrder() {
-        _state.value = _state.value.copy(isLoading = true, message = null, error = null)
+        _state.value = _state.value.copy(isLoading = true, order = null, message = null, error = null)
         viewModelScope.launch {
             try {
                 val response = getOrderByIdUseCase(_state.value.orderInput.toInt())
@@ -73,7 +74,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getOrder(order: Int) {
-        _state.value = _state.value.copy(isLoading = true, message = null, error = null)
+        _state.value = _state.value.copy(isLoading = true, followedOrder = null,message = null, error = null)
         viewModelScope.launch {
             try {
                 val response = getOrderByIdUseCase(order)
@@ -125,10 +126,14 @@ class HomeViewModel @Inject constructor(
         getServices()
     }
 
+    fun editEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(isEditEnabled = enabled)
+    }
+
     fun resetOrder() {
-        _state.update { currentState ->
-            currentState.copy(order = null, message = null, error = null)
-        }
+        _state.value = _state.value.copy(
+            order = null, message = null, error = null
+        )
     }
 }
 
@@ -146,5 +151,6 @@ data class HomeUiState(
     val service: Int = 0,
     val services: List<Services>? = null,
     val isFollowEnabled: Boolean = false,
+    val isEditEnabled: Boolean = false,
     val isLoading: Boolean = false
 )

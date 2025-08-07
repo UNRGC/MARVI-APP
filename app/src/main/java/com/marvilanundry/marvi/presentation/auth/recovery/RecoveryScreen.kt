@@ -173,8 +173,7 @@ fun RecoveryScreen(
                 )
                 Text(
                     text = stringResource(id = R.string.marvi_recovery_subtitle),
-                    color = CustomColors.textColor,
-                    textAlign = TextAlign.Center
+                    color = CustomColors.textColor
                 )
                 Spacer(
                     modifier = Modifier.height(16.dp)

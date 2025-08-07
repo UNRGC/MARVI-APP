@@ -1,5 +1,6 @@
 package com.marvilanundry.marvi.presentation.auth.home
 
+import MARVIFloatingActionButton
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,15 +24,21 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.marvilanundry.marvi.R
 import com.marvilanundry.marvi.presentation.auth.home.screens.AccountScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.FollowScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.OrdersScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.ToQuoteScreen
 import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
 import com.marvilanundry.marvi.presentation.core.components.MARVIBottomNavigationBar
+import com.marvilanundry.marvi.presentation.core.components.MARVIDatePicker
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialog
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialogType
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 @Composable
 fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit = {}) {
@@ -50,6 +57,7 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
     var showDialogQuestion by remember { mutableStateOf(false) }
     var showDialogSuccess by remember { mutableStateOf(false) }
     var showDialogError by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
     var disableScreen by remember { mutableStateOf(false) }
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
@@ -84,9 +92,15 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
             }
 
             order != null -> {
-                val orderDetails = homeViewModelState.orders?.find { it.id_pedido == order.id_pedido }?.detalles
+                val orderDetails =
+                    homeViewModelState.orders?.find { it.id_pedido == order.id_pedido }?.detalles
 
-                dialogMessage = "Número de pedido: ${order.id_pedido}\nFecha de creación: ${order.fecha_pedido}\nFecha de entrega: ${order.fecha_entrega}\nDetalles: ${orderDetails ?: "N/A"}\nTotal: $${String.format("%.2f", order.total)}"
+                dialogMessage =
+                    "Número de pedido: ${order.id_pedido}\nFecha de creación: ${order.fecha_pedido}\nFecha de entrega: ${order.fecha_entrega}\n\nDetalles:\n${orderDetails ?: "N/A"}\n\nTotal: $${
+                        String.format(
+                            Locale.getDefault(), "%.2f", order.total
+                        )
+                    }"
             }
         }
     }
@@ -157,16 +171,52 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                     homeViewModel.resetOrder()
                 })
         }
+
+        showDatePicker -> {
+            MARVIDatePicker(onDateSelected = { date ->
+                if (date != null) {
+                    val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                    calendar.timeInMillis = date
+
+                    val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
+                        timeZone = TimeZone.getTimeZone("UTC")
+                    }.format(calendar.time)
+
+                    homeViewModel.onSearchChange(formattedDate)
+                    homeViewModel.getOrders()
+                }
+                showDatePicker = false
+            }, onDismiss = {
+                showDatePicker = false
+            })
+        }
     }
 
-    Scaffold(
-        bottomBar = {
-            MARVIBottomNavigationBar(pagerState = pagerState) { page ->
-                coroutineScope.launch {
-                    pagerState.scrollToPage(page)
+    Scaffold(bottomBar = {
+        MARVIBottomNavigationBar(pagerState = pagerState) { page ->
+            coroutineScope.launch {
+                pagerState.scrollToPage(page)
+            }
+        }
+    }, floatingActionButton = {
+        when (pagerState.currentPage) {
+            1 -> {
+                MARVIFloatingActionButton(
+                    icon = R.drawable.ic_calendar_date,
+                ) { showDatePicker = true }
+            }
+
+            3 -> {
+                if (!homeViewModelState.isEditEnabled) {
+                    MARVIFloatingActionButton(
+                        icon = R.drawable.ic_pencil_square,
+                    ) {
+                        homeViewModel.editEnabled(true)
+                    }
                 }
             }
-        }) { padding ->
+        }
+    }) { padding ->
         HorizontalPager(
             state = pagerState, modifier = Modifier
                 .fillMaxSize()
