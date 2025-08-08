@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,6 +43,7 @@ import java.util.TimeZone
 
 @Composable
 fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
+    // Constantes
     val homeViewModel: HomeViewModel = hiltViewModel()
     val homeViewModelState by homeViewModel.state.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
@@ -53,7 +55,11 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
     val error = homeViewModelState.error?.split(",", limit = 2)
     val followedOrder = homeViewModelState.followedOrder
     val order = homeViewModelState.order
+    val cancelTitle = stringResource(R.string.marvi_home_dialog_cancel_title)
+    val cancelMessage = stringResource(R.string.marvi_home_dialog_cancel_message)
+    val infoMessage = stringResource(R.string.marvi_home_dialog_info_message)
 
+    // Variables
     var showDialogQuestion by remember { mutableStateOf(false) }
     var showDialogSuccess by remember { mutableStateOf(false) }
     var showDialogError by remember { mutableStateOf(false) }
@@ -62,19 +68,29 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // Botón de retroceso
     BackHandler(true) {
         showDialogQuestion = true
     }
 
+    // Guarda el cliente en el ViewModel
     LaunchedEffect(Unit) {
         homeViewModel.setClient(client)
     }
 
-    LaunchedEffect(pagerState.currentPage) {
-        focusManager.clearFocus()
-        homeViewModel.resetClient()
+    // Si el cliente es nulo, redirige al login
+    LaunchedEffect(client) {
+        if (client == null) onNavigateToLogin()
+
     }
 
+    // Limpia el foco y resetea el cliente al cambiar de página
+    LaunchedEffect(pagerState.currentPage) {
+        focusManager.clearFocus()
+        if (pagerState.currentPage != 3) homeViewModel.resetClient()
+    }
+
+    // Observa los cambios en el estado del ViewModel
     LaunchedEffect(homeViewModelState.isLoading) {
         when {
             message != null -> {
@@ -90,8 +106,8 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
 
             followedOrder != null -> {
                 if (followedOrder.estado == "Cancelado") {
-                    dialogTitle = "Pedido cancelado"
-                    dialogMessage = "el pedido #${followedOrder.id_pedido} fue cancelado."
+                    dialogTitle = cancelTitle
+                    dialogMessage = String.format(cancelMessage, followedOrder.id_pedido)
                     showDialogError = true
                 }
             }
@@ -100,32 +116,35 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
                 val orderDetails =
                     homeViewModelState.orders?.find { it.id_pedido == order.id_pedido }?.detalles
 
-                dialogMessage =
-                    "Número de pedido: ${order.id_pedido}\nFecha de creación: ${order.fecha_pedido}\nFecha de entrega: ${order.fecha_entrega}\n\nDetalles:\n${orderDetails ?: "N/A"}\n\nTotal: $${
-                        String.format(
-                            Locale.getDefault(), "%.2f", order.total
-                        )
-                    }"
+                dialogMessage = String.format(
+                    infoMessage,
+                    order.id_pedido.toString(),
+                    order.fecha_pedido,
+                    order.fecha_entrega,
+                    orderDetails,
+                    String.format(Locale.getDefault(), "%.2f", order.total)
+                )
             }
         }
     }
 
+    // Muestra el diálogo correspondiente
     when {
         showDialogLoading -> {
             MARVIDialog(
                 type = MARVIDialogType.LOADING,
-                title = "Cargando...",
-                message = "por favor, espera mientras se procesa tu información"
+                title = stringResource(R.string.marvi_core_dialog_loading_title),
+                message = stringResource(R.string.marvi_core_dialog_loading_message)
             )
         }
 
         showDialogQuestion -> {
             MARVIDialog(
                 type = MARVIDialogType.QUESTION,
-                title = "Cerrar sesión",
-                message = "¿Deseas cerrar sesión?",
-                confirmButtonText = "Si",
-                dismissButtonText = "No",
+                title = stringResource(R.string.marvi_home_dialog_question_title),
+                message = stringResource(R.string.marvi_home_dialog_question_message),
+                confirmButtonText = stringResource(R.string.marvi_home_dialog_question_confirm_button),
+                dismissButtonText = stringResource(R.string.marvi_home_dialog_question_dismiss_button),
                 onConfirm = {
                     disableScreen = true
                     showDialogQuestion = false
@@ -139,9 +158,9 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
         showDialogSuccess -> {
             MARVIDialog(
                 type = MARVIDialogType.SUCCESS,
-                title = "Éxito",
+                title = stringResource(R.string.marvi_home_dialog_success_title),
                 message = dialogMessage,
-                confirmButtonText = "Aceptar",
+                confirmButtonText = stringResource(R.string.marvi_home_dialog_success_confirm_button),
                 onConfirm = {
                     showDialogSuccess = false
                 })
@@ -152,7 +171,7 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
                 type = MARVIDialogType.ERROR,
                 title = dialogTitle,
                 message = dialogMessage,
-                confirmButtonText = "Aceptar",
+                confirmButtonText = stringResource(R.string.marvi_home_dialog_error_confirm_button),
                 onConfirm = {
                     showDialogError = false
                 },
@@ -164,10 +183,10 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
         showDialogInfo -> {
             MARVIDialog(
                 type = MARVIDialogType.SUCCESS,
-                title = "Información del pedido",
+                title = stringResource(R.string.marvi_home_dialog_info_title),
                 message = dialogMessage,
                 textAlign = TextAlign.Start,
-                confirmButtonText = "Cerrar",
+                confirmButtonText = stringResource(R.string.marvi_home_dialog_info_confirm_button),
                 onConfirm = {
                     homeViewModel.resetOrder()
                 },
@@ -196,6 +215,7 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
         }
     }
 
+    // Composable principal
     Scaffold(bottomBar = {
         MARVIBottomNavigationBar(pagerState = pagerState) { page ->
             coroutineScope.launch {

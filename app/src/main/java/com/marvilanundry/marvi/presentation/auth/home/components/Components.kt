@@ -36,6 +36,7 @@ import com.marvilanundry.marvi.R
 import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 import com.marvilanundry.marvi.ui.theme.CustomColors
 
+// Contenedor con bordes y fondo personalizado
 @Composable
 fun Container(content: @Composable ColumnScope.() -> Unit) {
     val shape = MaterialTheme.shapes.small
@@ -55,6 +56,7 @@ fun Container(content: @Composable ColumnScope.() -> Unit) {
     }
 }
 
+// Columna con scroll vertical, bordes y fondo personalizado
 @Composable
 fun ColumnScrollable(
     scrollState: ScrollState = rememberScrollState(),
@@ -72,6 +74,7 @@ fun ColumnScrollable(
     )
 }
 
+// Encabezado de sección con icono y título
 @Composable
 fun SectionHeader(iconRes: Int, title: String) {
     Row(
@@ -92,6 +95,7 @@ fun SectionHeader(iconRes: Int, title: String) {
     }
 }
 
+// Campo de texto con icono para limpiar el contenido
 @Composable
 fun ClearableTextField(
     label: String? = null,

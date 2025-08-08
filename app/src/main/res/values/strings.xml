@@ -67,8 +67,20 @@
     <string name="marvi_recovery_dialog_success_title">¡Correo enviado!</string>
     <string name="marvi_recovery_dialog_success_confirm_button">Iniciar sesión</string>
     <string name="marvi_recovery_dialog_error_confirm_button">Aceptar</string>
-    
-    <string name="marvi_home_title">Bienvenido a MARVI</string>
+
+    <string name="marvi_home_dialog_question_title">Cerrar sesión</string>
+    <string name="marvi_home_dialog_question_message">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="marvi_home_dialog_question_confirm_button">Si</string>
+    <string name="marvi_home_dialog_question_dismiss_button">No</string>
+    <string name="marvi_home_dialog_success_title">¡Éxito!</string>
+    <string name="marvi_home_dialog_success_confirm_button">Aceptar</string>
+    <string name="marvi_home_dialog_cancel_title">Pedido cancelado</string>
+    <string name="marvi_home_dialog_cancel_message">El pedido #%1$s fue cancelado</string>
+    <string name="marvi_home_dialog_cancel_confirm_button">Aceptar</string>
+    <string name="marvi_home_dialog_error_confirm_button">Aceptar</string>
+    <string name="marvi_home_dialog_info_title">Información del pedido</string>
+    <string name="marvi_home_dialog_info_message">Número de pedido: %1$s\nFecha de creación: %2$s\nFecha de entrega: %3$s\n\nDetalles:\n%4$s\n\nTotal: $%5$s</string>
+    <string name="marvi_home_dialog_info_confirm_button">Cerrar</string>
 
     <string name="marvi_follow_title">Seguimiento de pedidos</string>
     <string name="marvi_follow_order">Ingresa tu número de pedido</string>
