@@ -85,7 +85,7 @@ fun NavigationWrapper() {
             ) + fadeOut()
         }) {
             HomeScreen(
-                sharedViewModel = sharedViewModel, onNavigateToLogin = {
+                client = sharedViewModel.client.value, onNavigateToLogin = {
                     navController.navigate(Login) {
                         popUpTo(Home) { inclusive = true }
                     }

@@ -21,18 +21,21 @@ class RegisterViewModel @Inject constructor(
     private val _state = MutableStateFlow(RegisterUiState())
     val state: StateFlow<RegisterUiState> = _state
 
-    private fun isValidUser(code: String, name: String, firstSurname: String): Boolean {
-        val isCodeValid = code.isNotBlank() && code.length >= 3
-        val isNameValid = name.isNotBlank() && name.length >= 3
-        val isFirstSurnameValid = firstSurname.isNotBlank() && firstSurname.length >= 3
-        return isCodeValid && isNameValid && isFirstSurnameValid
+    private fun isValidUser(
+        code: String = _state.value.code,
+        name: String = _state.value.name,
+        firstSurname: String = _state.value.firstSurname
+    ): Boolean {
+        return code.length >= 3 && name.length >= 3 && firstSurname.length >= 3
     }
 
-    private fun isValidRegister(phone: String, email: String, password: String): Boolean {
-        val isPhoneValid = phone.length == 10
-        val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        val isPasswordValid = password.length >= 8
-        return isPhoneValid && isEmailValid && isPasswordValid
+    private fun isValidRegister(
+        phone: String = _state.value.phone,
+        email: String = _state.value.email,
+        password: String = _state.value.password
+    ): Boolean {
+        return Patterns.PHONE.matcher(phone).matches() && Patterns.EMAIL_ADDRESS.matcher(email)
+            .matches() && password.length >= 8
     }
 
     private fun calculateProgress(updatedState: RegisterUiState): Float {
@@ -49,17 +52,10 @@ class RegisterViewModel @Inject constructor(
     fun onCodeChange(code: String) {
         _state.update { currentState ->
             val stateWithCodeChanged = currentState.copy(code = code)
-
-            val nextEnabled = isValidUser(
-                stateWithCodeChanged.code,
-                stateWithCodeChanged.name,
-                stateWithCodeChanged.firstSurname
-            )
-
             val progress = calculateProgress(stateWithCodeChanged)
 
             stateWithCodeChanged.copy(
-                isNextEnabled = nextEnabled, progressBar = progress
+                isNextEnabled = isValidUser(code = code), progressBar = progress
             )
         }
     }
@@ -67,17 +63,10 @@ class RegisterViewModel @Inject constructor(
     fun onNameChange(name: String) {
         _state.update { currentState ->
             val stateWithNameChanged = currentState.copy(name = name)
-
-            val nextEnabled = isValidUser(
-                stateWithNameChanged.code,
-                stateWithNameChanged.name,
-                stateWithNameChanged.firstSurname
-            )
-
             val progress = calculateProgress(stateWithNameChanged)
 
             stateWithNameChanged.copy(
-                isNextEnabled = nextEnabled, progressBar = progress
+                isNextEnabled = isValidUser(name = name), progressBar = progress
             )
         }
     }
@@ -85,17 +74,10 @@ class RegisterViewModel @Inject constructor(
     fun onFirstSurnameChange(firstSurname: String) {
         _state.update { currentState ->
             val stateWithFirstSurnameChanged = currentState.copy(firstSurname = firstSurname)
-
-            val nextEnabled = isValidUser(
-                stateWithFirstSurnameChanged.code,
-                stateWithFirstSurnameChanged.name,
-                stateWithFirstSurnameChanged.firstSurname
-            )
-
             val progress = calculateProgress(stateWithFirstSurnameChanged)
 
             stateWithFirstSurnameChanged.copy(
-                isNextEnabled = nextEnabled, progressBar = progress
+                isNextEnabled = isValidUser(firstSurname = firstSurname), progressBar = progress
             )
         }
     }
@@ -103,17 +85,10 @@ class RegisterViewModel @Inject constructor(
     fun onSecondSurnameChange(secondSurname: String) {
         _state.update { currentState ->
             val stateWithSecondSurnameChanged = currentState.copy(secondSurname = secondSurname)
-
-            val nextEnabled = isValidUser(
-                stateWithSecondSurnameChanged.code,
-                stateWithSecondSurnameChanged.name,
-                stateWithSecondSurnameChanged.firstSurname
-            )
-
             val progress = calculateProgress(stateWithSecondSurnameChanged)
 
             stateWithSecondSurnameChanged.copy(
-                isNextEnabled = nextEnabled, progressBar = progress
+                isNextEnabled = isValidUser(), progressBar = progress
             )
         }
     }
@@ -121,17 +96,10 @@ class RegisterViewModel @Inject constructor(
     fun onPhoneChange(phone: String) {
         _state.update { currentState ->
             val stateWithPhoneChanged = currentState.copy(phone = phone)
-
-            val registerEnabled = isValidRegister(
-                stateWithPhoneChanged.phone,
-                stateWithPhoneChanged.email,
-                stateWithPhoneChanged.password
-            )
-
             val progress = calculateProgress(stateWithPhoneChanged)
 
             stateWithPhoneChanged.copy(
-                isRegisterEnabled = registerEnabled, progressBar = progress
+                isRegisterEnabled = isValidRegister(phone = phone), progressBar = progress
             )
         }
     }
@@ -139,17 +107,10 @@ class RegisterViewModel @Inject constructor(
     fun onEmailChange(email: String) {
         _state.update { currentState ->
             val stateWithEmailChanged = currentState.copy(email = email)
-
-            val registerEnabled = isValidRegister(
-                stateWithEmailChanged.phone,
-                stateWithEmailChanged.email,
-                stateWithEmailChanged.password
-            )
-
             val progress = calculateProgress(stateWithEmailChanged)
 
             stateWithEmailChanged.copy(
-                isRegisterEnabled = registerEnabled, progressBar = progress
+                isRegisterEnabled = isValidRegister(email = email), progressBar = progress
             )
         }
     }
@@ -157,17 +118,10 @@ class RegisterViewModel @Inject constructor(
     fun onPasswordChange(password: String) {
         _state.update { currentState ->
             val stateWithPasswordChanged = currentState.copy(password = password)
-
-            val registerEnabled = isValidRegister(
-                stateWithPasswordChanged.phone,
-                stateWithPasswordChanged.email,
-                stateWithPasswordChanged.password
-            )
-
             val progress = calculateProgress(stateWithPasswordChanged)
 
             stateWithPasswordChanged.copy(
-                isRegisterEnabled = registerEnabled, progressBar = progress
+                isRegisterEnabled = isValidRegister(password = password), progressBar = progress
             )
         }
     }

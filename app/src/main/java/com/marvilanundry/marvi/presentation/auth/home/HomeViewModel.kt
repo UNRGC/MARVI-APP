@@ -1,6 +1,7 @@
 package com.marvilanundry.marvi.presentation.auth.home
 
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marvilanundry.marvi.domain.model.Client
@@ -38,7 +39,8 @@ class HomeViewModel @Inject constructor(
         email: String = _state.value.clientEmail,
         password: String = _state.value.clientPassword
     ): Boolean {
-        return code.length >= 3 && name.length >= 3 && firstSurname.length >= 3 && phone.length >= 10 && email.length >= 3 && password.length >= 8
+        return code.length >= 3 && name.length >= 3 && firstSurname.length >= 3 && Patterns.PHONE.matcher(phone).matches() && Patterns.EMAIL_ADDRESS.matcher(email)
+            .matches() && password.length >= 8
     }
 
     fun onOrderChange(order: String) {
@@ -213,7 +215,6 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = putUpdateClientUseCase(updateClient)
 
-                Log.d("HomeViewModel", "updateClient: $response")
                 _state.value = _state.value.copy(
                     message = response, client = _state.value.client?.copy(
                         codigo = updateClient.codigo,
@@ -225,7 +226,6 @@ class HomeViewModel @Inject constructor(
                     ), isEditEnabled = false, isLoading = false
                 )
             } catch (e: Exception) {
-                Log.d("HomeViewModel", "updateClient: ${e.message}")
                 _state.value = _state.value.copy(error = e.message, isLoading = false)
             }
         }
@@ -251,6 +251,7 @@ class HomeViewModel @Inject constructor(
             clientPhone = _state.value.client?.telefono ?: "",
             clientEmail = _state.value.client?.correo ?: "",
             clientPassword = _state.value.client?.contrasena ?: "",
+            isEditEnabled = false,
             message = null,
             error = null
         )

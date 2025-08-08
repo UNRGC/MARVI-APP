@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,7 +35,7 @@ import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 
 @Composable
 fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) {
-    var viewPassword: Boolean by remember { mutableStateOf(false) }
+    var viewPassword by rememberSaveable { mutableStateOf(false) }
 
     ColumnScrollable(
         paddingValues = PaddingValues(24.dp, 24.dp, 24.dp, 16.dp)
@@ -106,20 +107,22 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 enabled = homeViewModelState.isEditEnabled,
                 placeholder = stringResource(id = R.string.marvi_register_password_placeholder),
                 trailingIcon = {
-                    Icon(
-                        painter = if (viewPassword) painterResource(id = R.drawable.ic_eye_slash) else painterResource(
-                            id = R.drawable.ic_eye
-                        ),
-                        contentDescription = stringResource(id = R.string.marvi_register_password),
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }) {
-                                viewPassword = !viewPassword
-                            },
-                        tint = MaterialTheme.colorScheme.outlineVariant
-                    )
+                    if (homeViewModelState.isEditEnabled) {
+                        Icon(
+                            painter = if (viewPassword) painterResource(id = R.drawable.ic_eye_slash) else painterResource(
+                                id = R.drawable.ic_eye
+                            ),
+                            contentDescription = stringResource(id = R.string.marvi_register_password),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }) {
+                                    viewPassword = !viewPassword
+                                },
+                            tint = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
                 },
                 visualTransformation = if (!viewPassword) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardType = KeyboardType.Password,
@@ -143,7 +146,11 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                     text = "Guardar",
                     modifier = Modifier.weight(1f),
                     enabled = homeViewModelState.isEditEnabled && homeViewModelState.isSaveEnabled,
-                    message = "No se han realizado cambios"
+                    message = if (homeViewModelState.isEditEnabled) {
+                        "Completa todos los campos* antes de guardar"
+                    } else {
+                        "No se han realizado cambios"
+                    }
                 ) {
                     homeViewModel.updateClient()
                 }

@@ -108,8 +108,8 @@ class ApiService @Inject constructor() {
     // Historial de pedidos
     suspend fun getOrdersByClient(clientId: Int, search: String? = null): List<OrdersDto> {
         val response = client.get("https://marvi-api.onrender.com/orders/client/search?id_cliente=$clientId") {
-            search?.let {
-                url.parameters.append("busqueda", it)
+            if (!search.isNullOrEmpty()) {
+                url.parameters.append("busqueda", search)
             }
         }
         return handleResponse(response)

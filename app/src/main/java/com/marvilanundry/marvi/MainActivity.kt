@@ -16,6 +16,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MARVITheme {
+                // Controlador de navegación
                 NavigationWrapper()
             }
         }

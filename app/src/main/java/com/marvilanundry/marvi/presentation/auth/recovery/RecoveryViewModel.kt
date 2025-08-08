@@ -34,13 +34,10 @@ class RecoveryViewModel @Inject constructor(
     fun onEmailChange(email: String) {
         _state.update { currentState ->
             val stateWithEmailChanged = currentState.copy(email = email)
-            val recoveryEnabled = isValidRecovery(
-                stateWithEmailChanged.email
-            )
             val progress = calculateProgress(stateWithEmailChanged)
 
             stateWithEmailChanged.copy(
-                isRecoveryEnabled = recoveryEnabled, progressBar = progress
+                isRecoveryEnabled = isValidRecovery(email), progressBar = progress
             )
         }
     }

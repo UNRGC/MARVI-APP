@@ -20,38 +20,22 @@ class LoginViewModel @Inject constructor(
     private val _state = MutableStateFlow(LoginUiState())
     val state: StateFlow<LoginUiState> = _state
 
-    private fun isValidLogin(email: String, password: String): Boolean {
-        val isValidEmail = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        val isValidPassword = password.length >= 8
-        return isValidEmail && isValidPassword
+    private fun isValidLogin(
+        email: String = _state.value.email, password: String = _state.value.password
+    ): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 8
     }
 
     fun onEmailChange(email: String) {
         _state.update { currentState ->
-            val stateWithEmailChanged = currentState.copy(email = email)
-
-            val registerEnabled = isValidLogin(
-                stateWithEmailChanged.email,
-                stateWithEmailChanged.password,
-            )
-
-            stateWithEmailChanged.copy(
-                isLoginEnabled = registerEnabled
-            )
+            currentState.copy(email = email, isLoginEnabled = isValidLogin(email = email))
         }
     }
 
     fun onPasswordChange(password: String) {
         _state.update { currentState ->
-            val stateWithPasswordChanged = currentState.copy(password = password)
-
-            val registerEnabled = isValidLogin(
-                stateWithPasswordChanged.email,
-                stateWithPasswordChanged.password,
-            )
-
-            stateWithPasswordChanged.copy(
-                isLoginEnabled = registerEnabled
+            currentState.copy(
+                password = password, isLoginEnabled = isValidLogin(password = password)
             )
         }
     }

@@ -3,11 +3,11 @@
 
     <string name="marvi_welcome_message">Conectando…</string>
     <string name="marvi_welcome_dialog_error_title">Error de conexión</string>
-    <string name="marvi_welcome_dialog_error_message">el servidor no responde, revisa tu conexión a internet</string>
+    <string name="marvi_welcome_dialog_error_message">El servidor no responde, revisa tu conexión a internet</string>
     <string name="marvi_welcome_dialog_error_confirm_button">Salir</string>
 
     <string name="marvi_core_dialog_loading_title">Cargando…</string>
-    <string name="marvi_core_dialog_loading_message">por favor, espera mientras se procesa tu información</string>
+    <string name="marvi_core_dialog_loading_message">Por favor, espera mientras se procesa tu información</string>
 
     <string name="marvi_login_email">Correo electrónico</string>
     <string name="marvi_login_email_placeholder">Ingresa tu correo electrónico</string>
@@ -46,7 +46,7 @@
     <string name="marvi_register_button">Registrarse</string>
     <string name="marvi_register_button_message">El número de teléfono, correo electrónico y contraseña deben ser válidos</string>
     <string name="marvi_register_dialog_question_title">Confirmar registro</string>
-    <string name="marvi_register_dialog_question_message">¿tu información es correcta?</string>
+    <string name="marvi_register_dialog_question_message">¿Tu información es correcta?</string>
     <string name="marvi_register_dialog_question_confirm_button">Si</string>
     <string name="marvi_register_dialog_question_dismiss_button">No</string>
     <string name="marvi_register_dialog_success_title">¡Registro exitoso!</string>
@@ -67,6 +67,8 @@
     <string name="marvi_recovery_dialog_success_title">¡Correo enviado!</string>
     <string name="marvi_recovery_dialog_success_confirm_button">Iniciar sesión</string>
     <string name="marvi_recovery_dialog_error_confirm_button">Aceptar</string>
+    
+    <string name="marvi_home_title">Bienvenido a MARVI</string>
 
     <string name="marvi_follow_title">Seguimiento de pedidos</string>
     <string name="marvi_follow_order">Ingresa tu número de pedido</string>

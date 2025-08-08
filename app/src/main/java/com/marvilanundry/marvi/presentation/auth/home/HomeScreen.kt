@@ -25,11 +25,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marvilanundry.marvi.R
+import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.presentation.auth.home.screens.AccountScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.FollowScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.OrdersScreen
 import com.marvilanundry.marvi.presentation.auth.home.screens.ToQuoteScreen
-import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
 import com.marvilanundry.marvi.presentation.core.components.MARVIBottomNavigationBar
 import com.marvilanundry.marvi.presentation.core.components.MARVIDatePicker
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialog
@@ -41,7 +41,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 @Composable
-fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit = {}) {
+fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val homeViewModelState by homeViewModel.state.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
@@ -67,7 +67,12 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
     }
 
     LaunchedEffect(Unit) {
-        homeViewModel.setClient(sharedViewModel.client.value)
+        homeViewModel.setClient(client)
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        focusManager.clearFocus()
+        homeViewModel.resetClient()
     }
 
     LaunchedEffect(homeViewModelState.isLoading) {
@@ -138,7 +143,6 @@ fun HomeScreen(sharedViewModel: SharedViewModel, onNavigateToLogin: () -> Unit =
                 message = dialogMessage,
                 confirmButtonText = "Aceptar",
                 onConfirm = {
-                    disableScreen = true
                     showDialogSuccess = false
                 })
         }

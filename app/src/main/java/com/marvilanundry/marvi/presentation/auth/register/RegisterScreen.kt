@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -60,107 +62,103 @@ import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 @Composable
 private fun RegisterPersonalSection(
     modifier: Modifier,
-    state: RegisterUiState,
-    scrollState: ScrollState,
-    onCodeChange: (String) -> Unit,
-    onNameChange: (String) -> Unit,
-    onFirstSurnameChange: (String) -> Unit,
-    onSecondSurnameChange: (String) -> Unit
+    registerViewModel: RegisterViewModel,
+    registerViewModelState: RegisterUiState
 ) {
     Column(
-        modifier = modifier.verticalScroll(scrollState),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_code),
-            value = state.code,
+            value = registerViewModelState.code,
             placeholder = stringResource(id = R.string.marvi_register_code_placeholder),
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
             onValueChange = { input ->
-                onCodeChange(input.trim())
+                registerViewModel.onCodeChange(input.trim())
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_name),
-            value = state.name,
+            value = registerViewModelState.name,
             placeholder = stringResource(id = R.string.marvi_register_name_placeholder),
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
-            onValueChange = onNameChange
-        )
+            onValueChange = { input ->
+                registerViewModel.onNameChange(input.trim())
+            })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_first_surname),
-            value = state.firstSurname,
+            value = registerViewModelState.firstSurname,
             placeholder = stringResource(id = R.string.marvi_register_first_surname_placeholder),
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
-            onValueChange = onFirstSurnameChange
-        )
+            onValueChange = { input ->
+                registerViewModel.onFirstSurnameChange(input.trim())
+            })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_second_surname),
-            value = state.secondSurname,
+            value = registerViewModelState.secondSurname,
             placeholder = stringResource(id = R.string.marvi_register_second_surname_placeholder),
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
-            onValueChange = onSecondSurnameChange
-        )
+            onValueChange = { input ->
+                registerViewModel.onSecondSurnameChange(input.trim())
+            })
     }
 }
 
 @Composable
 private fun RegisterCountSection(
     modifier: Modifier,
-    state: RegisterUiState,
-    scrollState: ScrollState,
-    onPhoneChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit
+    registerViewModel: RegisterViewModel,
+    registerViewModelState: RegisterUiState
 ) {
     var viewPassword: Boolean by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier.verticalScroll(scrollState),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_phone),
-            value = state.phone,
+            value = registerViewModelState.phone,
             placeholder = stringResource(id = R.string.marvi_register_phone_placeholder),
             keyboardType = KeyboardType.Phone,
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
             maxLength = 10,
             onValueChange = { input ->
-                onPhoneChange(input.filter(Char::isDigit))
+                registerViewModel.onPhoneChange(input.filter(Char::isDigit))
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_email),
-            value = state.email,
+            value = registerViewModelState.email,
             placeholder = stringResource(id = R.string.marvi_register_email_placeholder),
             keyboardType = KeyboardType.Email,
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
             onValueChange = { input ->
-                onEmailChange(input.trim())
+                registerViewModel.onEmailChange(input.trim())
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
             label = stringResource(id = R.string.marvi_register_password),
-            value = state.password,
+            value = registerViewModelState.password,
             placeholder = stringResource(id = R.string.marvi_register_password_placeholder),
             trailingIcon = {
                 Icon(
                     painter = if (viewPassword) painterResource(id = R.drawable.ic_eye_slash) else painterResource(
-                        id = R.drawable.ic_eye
-                    ),
+                    id = R.drawable.ic_eye
+                ),
                     contentDescription = stringResource(id = R.string.marvi_register_password),
                     modifier = Modifier
                         .size(20.dp)
@@ -178,7 +176,7 @@ private fun RegisterCountSection(
             singleLine = true,
             maxLength = 20,
             onValueChange = { input ->
-                onPasswordChange(input.trim())
+                registerViewModel.onPasswordChange(input.trim())
             })
     }
 }
@@ -189,7 +187,7 @@ fun RegisterScreen(
 ) {
     val registerViewModel: RegisterViewModel = hiltViewModel()
     val registerViewModelState by registerViewModel.state.collectAsStateWithLifecycle()
-    val scrollState = rememberScrollState()
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val toastMessage = stringResource(id = R.string.marvi_register_toast_message)
@@ -213,6 +211,10 @@ fun RegisterScreen(
             disableScreen = true
             onNavigateToLogin()
         } else registerViewModel.onSectionChange(0)
+    }
+
+    LaunchedEffect(registerViewModelState.section) {
+        pagerState.animateScrollToPage(registerViewModelState.section)
     }
 
     LaunchedEffect(registerViewModelState.isLoading) {
@@ -343,65 +345,59 @@ fun RegisterScreen(
                 Spacer(
                     modifier = Modifier.height(24.dp)
                 )
-                AnimatedContent(
-                    targetState = registerViewModelState.section,
-                    modifier = Modifier.weight(1f),
-                    label = "RegisterSection",
-                    transitionSpec = { fadeIn().togetherWith(fadeOut()) }) { section ->
-                    if (section == 0) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            RegisterPersonalSection(
-                                modifier = Modifier.weight(1f),
-                                state = registerViewModelState,
-                                scrollState = scrollState,
-                                onCodeChange = registerViewModel::onCodeChange,
-                                onNameChange = registerViewModel::onNameChange,
-                                onFirstSurnameChange = registerViewModel::onFirstSurnameChange,
-                                onSecondSurnameChange = registerViewModel::onSecondSurnameChange
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            MARVIButton(
-                                text = stringResource(id = R.string.marvi_register_next_button),
-                                modifier = Modifier.fillMaxWidth(),
-                                message = stringResource(id = R.string.marvi_register_next_button_message),
-                                enabled = registerViewModelState.isNextEnabled
-                            ) {
-                                registerViewModel.checkCode()
-                            }
-                        }
-                    } else {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            RegisterCountSection(
-                                modifier = Modifier.weight(1f),
-                                state = registerViewModelState,
-                                scrollState = scrollState,
-                                onPhoneChange = registerViewModel::onPhoneChange,
-                                onEmailChange = registerViewModel::onEmailChange,
-                                onPasswordChange = registerViewModel::onPasswordChange
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                MARVIButton(
-                                    text = stringResource(id = R.string.marvi_register_back_button),
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    pageSpacing = 16.dp,
+                    userScrollEnabled = false
+                ) { page ->
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        when (page) {
+                            0 -> {
+                                RegisterPersonalSection(
                                     modifier = Modifier.weight(1f),
-                                    type = MARVIButtonType.SECONDARY
+                                    registerViewModel,
+                                    registerViewModelState
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                MARVIButton(
+                                    text = stringResource(id = R.string.marvi_register_next_button),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    message = stringResource(id = R.string.marvi_register_next_button_message),
+                                    enabled = registerViewModelState.isNextEnabled
                                 ) {
-                                    registerViewModel.onSectionChange(0)
+                                    registerViewModel.checkCode()
                                 }
-                                Spacer(modifier = Modifier.size(16.dp))
-                                MARVIButton(
-                                    text = stringResource(id = R.string.marvi_register_button),
+                            }
+
+                            1 -> {
+                                RegisterCountSection(
                                     modifier = Modifier.weight(1f),
-                                    message = stringResource(id = R.string.marvi_register_button_message),
-                                    enabled = registerViewModelState.isRegisterEnabled
-                                ) {
-                                    showDialogQuestion = true
+                                    registerViewModel,
+                                    registerViewModelState
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    MARVIButton(
+                                        text = stringResource(id = R.string.marvi_register_back_button),
+                                        modifier = Modifier.weight(1f),
+                                        type = MARVIButtonType.SECONDARY
+                                    ) {
+                                        registerViewModel.onSectionChange(0)
+                                    }
+                                    Spacer(modifier = Modifier.size(16.dp))
+                                    MARVIButton(
+                                        text = stringResource(id = R.string.marvi_register_button),
+                                        modifier = Modifier.weight(1f),
+                                        message = stringResource(id = R.string.marvi_register_button_message),
+                                        enabled = registerViewModelState.isRegisterEnabled
+                                    ) {
+                                        showDialogQuestion = true
+                                    }
                                 }
                             }
                         }
