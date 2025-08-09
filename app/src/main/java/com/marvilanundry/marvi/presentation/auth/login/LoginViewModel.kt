@@ -28,14 +28,14 @@ class LoginViewModel @Inject constructor(
 
     fun onEmailChange(email: String) {
         _state.update { currentState ->
-            currentState.copy(email = email, isLoginEnabled = isValidLogin(email = email))
+            currentState.copy(email = email.replace(" ", ""), isLoginEnabled = isValidLogin(email = email))
         }
     }
 
     fun onPasswordChange(password: String) {
         _state.update { currentState ->
             currentState.copy(
-                password = password, isLoginEnabled = isValidLogin(password = password)
+                password = password.replace(" ", ""), isLoginEnabled = isValidLogin(password = password)
             )
         }
     }

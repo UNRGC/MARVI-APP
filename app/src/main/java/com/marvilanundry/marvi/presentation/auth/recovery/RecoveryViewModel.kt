@@ -37,7 +37,7 @@ class RecoveryViewModel @Inject constructor(
             val progress = calculateProgress(stateWithEmailChanged)
 
             stateWithEmailChanged.copy(
-                isRecoveryEnabled = isValidRecovery(email), progressBar = progress
+                isRecoveryEnabled = isValidRecovery(email.replace(" ", "")), progressBar = progress
             )
         }
     }

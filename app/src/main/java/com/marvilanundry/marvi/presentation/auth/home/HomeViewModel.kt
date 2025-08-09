@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
 
     fun onOrderChange(order: String) {
         _state.update { currentState ->
-            val stateWithOrderChanged = currentState.copy(orderInput = order, followedOrder = null)
+            val stateWithOrderChanged = currentState.copy(orderInput = order.filter(Char::isDigit), followedOrder = null)
             val order = order.toIntOrNull() ?: 0
             val isFollowEnabled = order > 0
 
@@ -72,14 +72,14 @@ class HomeViewModel @Inject constructor(
                 0.0
             }
             currentState.copy(
-                toQuoteInput = toQuote, toQuote = String.format(Locale.getDefault(), "%.2f", total)
+                toQuoteInput = toQuote.filter(Char::isDigit), toQuote = String.format(Locale.getDefault(), "%.2f", total)
             )
         }
     }
 
     fun onClientCodeChange(code: String) {
         _state.update { currentState ->
-            currentState.copy(clientCode = code, isSaveEnabled = validateClient(code = code))
+            currentState.copy(clientCode = code.replace(" ", ""), isSaveEnabled = validateClient(code = code))
         }
     }
 
@@ -103,19 +103,19 @@ class HomeViewModel @Inject constructor(
 
     fun onClientPhoneChange(phone: String) {
         _state.update { currentState ->
-            currentState.copy(clientPhone = phone, isSaveEnabled = validateClient(phone = phone))
+            currentState.copy(clientPhone = phone.filter(Char::isDigit), isSaveEnabled = validateClient(phone = phone))
         }
     }
 
     fun onClientEmailChange(email: String) {
         _state.update { currentState ->
-            currentState.copy(clientEmail = email, isSaveEnabled = validateClient(email = email))
+            currentState.copy(clientEmail = email.replace(" ", ""), isSaveEnabled = validateClient(email = email))
         }
     }
 
     fun onClientPasswordChange(password: String) {
         _state.update { currentState ->
-            currentState.copy(clientPassword = password, isSaveEnabled = validateClient(password = password))
+            currentState.copy(clientPassword = password.replace(" ", ""), isSaveEnabled = validateClient(password = password))
         }
     }
 
@@ -183,9 +183,9 @@ class HomeViewModel @Inject constructor(
             currentState.copy(
                 clientId = client?.id_cliente,
                 clientCode = client?.codigo ?: "",
-                clientName = client?.nombre ?: "",
-                clientFirstSurname = client?.primer_apellido ?: "",
-                clientSecondSurname = client?.segundo_apellido ?: "",
+                clientName = client?.nombre?.trim() ?: "",
+                clientFirstSurname = client?.primer_apellido?.trim() ?: "",
+                clientSecondSurname = client?.segundo_apellido?.trim() ?: "",
                 clientPhone = client?.telefono ?: "",
                 clientEmail = client?.correo ?: "",
                 clientPassword = client?.contrasena ?: "",

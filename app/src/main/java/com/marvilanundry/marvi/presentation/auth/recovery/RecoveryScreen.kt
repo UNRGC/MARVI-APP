@@ -210,7 +210,7 @@ fun RecoveryScreen(
                         capitalization = KeyboardCapitalization.None,
                         singleLine = true,
                         onValueChange = { input ->
-                            recoveryViewModel.onEmailChange(input.trim())
+                            recoveryViewModel.onEmailChange(input)
                         })
                     Spacer(
                         modifier = Modifier.weight(1f)

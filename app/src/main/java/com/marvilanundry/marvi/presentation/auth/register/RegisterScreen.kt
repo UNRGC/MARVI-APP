@@ -2,12 +2,7 @@ package com.marvilanundry.marvi.presentation.auth.register
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -76,8 +71,9 @@ private fun RegisterPersonalSection(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
+            maxLength = 30,
             onValueChange = { input ->
-                registerViewModel.onCodeChange(input.trim())
+                registerViewModel.onCodeChange(input)
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
@@ -87,8 +83,9 @@ private fun RegisterPersonalSection(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
+            maxLength = 50,
             onValueChange = { input ->
-                registerViewModel.onNameChange(input.trim())
+                registerViewModel.onNameChange(input)
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
@@ -98,8 +95,9 @@ private fun RegisterPersonalSection(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
+            maxLength = 50,
             onValueChange = { input ->
-                registerViewModel.onFirstSurnameChange(input.trim())
+                registerViewModel.onFirstSurnameChange(input)
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
@@ -109,8 +107,9 @@ private fun RegisterPersonalSection(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Words,
             singleLine = true,
+            maxLength = 50,
             onValueChange = { input ->
-                registerViewModel.onSecondSurnameChange(input.trim())
+                registerViewModel.onSecondSurnameChange(input)
             })
     }
 }
@@ -136,7 +135,7 @@ private fun RegisterCountSection(
             singleLine = true,
             maxLength = 10,
             onValueChange = { input ->
-                registerViewModel.onPhoneChange(input.filter(Char::isDigit))
+                registerViewModel.onPhoneChange(input)
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
@@ -147,7 +146,7 @@ private fun RegisterCountSection(
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
             onValueChange = { input ->
-                registerViewModel.onEmailChange(input.trim())
+                registerViewModel.onEmailChange(input)
             })
         Spacer(modifier = Modifier.height(24.dp))
         MARVITextField(
@@ -174,9 +173,8 @@ private fun RegisterCountSection(
             keyboardType = KeyboardType.Password,
             capitalization = KeyboardCapitalization.None,
             singleLine = true,
-            maxLength = 20,
             onValueChange = { input ->
-                registerViewModel.onPasswordChange(input.trim())
+                registerViewModel.onPasswordChange(input)
             })
     }
 }

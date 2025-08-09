@@ -169,7 +169,7 @@ fun LoginScreen(
                         capitalization = KeyboardCapitalization.None,
                         singleLine = true,
                         onValueChange = { input ->
-                            loginViewModel.onEmailChange(input.trim())
+                            loginViewModel.onEmailChange(input)
                         })
                     Spacer(
                         modifier = Modifier.height(24.dp)
@@ -206,7 +206,7 @@ fun LoginScreen(
                         capitalization = KeyboardCapitalization.None,
                         singleLine = true,
                         onValueChange = { input ->
-                            loginViewModel.onPasswordChange(input.trim())
+                            loginViewModel.onPasswordChange(input)
                         })
                 }
 

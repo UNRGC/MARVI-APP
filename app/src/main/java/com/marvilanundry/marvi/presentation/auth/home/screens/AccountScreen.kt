@@ -54,6 +54,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.None,
                 singleLine = true,
+                maxLength = 30,
                 onValueChange = { homeViewModel.onClientCodeChange(it) })
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_name),
@@ -63,6 +64,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
                 singleLine = true,
+                maxLength = 50,
                 onValueChange = { homeViewModel.onClientNameChange(it) })
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_first_surname),
@@ -72,6 +74,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
                 singleLine = true,
+                maxLength = 50,
                 onValueChange = { homeViewModel.onClientFirstSurnameChange(it) })
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_second_surname),
@@ -81,6 +84,7 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.Words,
                 singleLine = true,
+                maxLength = 50,
                 onValueChange = { homeViewModel.onClientSecondSurnameChange(it) })
             MARVITextField(
                 label = stringResource(id = R.string.marvi_register_phone),
@@ -128,7 +132,6 @@ fun AccountScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 keyboardType = KeyboardType.Password,
                 capitalization = KeyboardCapitalization.None,
                 singleLine = true,
-                maxLength = 20,
                 onValueChange = { homeViewModel.onClientPasswordChange(it) })
             Row {
                 MARVIButton(

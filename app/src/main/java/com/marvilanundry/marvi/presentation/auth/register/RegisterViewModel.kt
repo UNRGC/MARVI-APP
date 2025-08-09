@@ -51,7 +51,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onCodeChange(code: String) {
         _state.update { currentState ->
-            val stateWithCodeChanged = currentState.copy(code = code)
+            val stateWithCodeChanged = currentState.copy(code = code.replace(" ", ""))
             val progress = calculateProgress(stateWithCodeChanged)
 
             stateWithCodeChanged.copy(
@@ -95,7 +95,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onPhoneChange(phone: String) {
         _state.update { currentState ->
-            val stateWithPhoneChanged = currentState.copy(phone = phone)
+            val stateWithPhoneChanged = currentState.copy(phone = phone.filter(Char::isDigit))
             val progress = calculateProgress(stateWithPhoneChanged)
 
             stateWithPhoneChanged.copy(
@@ -106,7 +106,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onEmailChange(email: String) {
         _state.update { currentState ->
-            val stateWithEmailChanged = currentState.copy(email = email)
+            val stateWithEmailChanged = currentState.copy(email = email.replace(" ", ""))
             val progress = calculateProgress(stateWithEmailChanged)
 
             stateWithEmailChanged.copy(
@@ -117,7 +117,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onPasswordChange(password: String) {
         _state.update { currentState ->
-            val stateWithPasswordChanged = currentState.copy(password = password)
+            val stateWithPasswordChanged = currentState.copy(password = password.replace(" ", ""))
             val progress = calculateProgress(stateWithPasswordChanged)
 
             stateWithPasswordChanged.copy(
@@ -154,9 +154,9 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             val newClient = NewClient(
                 codigo = _state.value.code,
-                nombre = _state.value.name,
-                primer_apellido = _state.value.firstSurname,
-                segundo_apellido = _state.value.secondSurname.ifBlank { null },
+                nombre = _state.value.name.trim(),
+                primer_apellido = _state.value.firstSurname.trim(),
+                segundo_apellido = _state.value.secondSurname.trim().ifBlank { null },
                 telefono = _state.value.phone,
                 correo = _state.value.email,
                 contrasena = _state.value.password

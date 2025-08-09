@@ -84,6 +84,7 @@ fun ToQuoteScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState)
                 placeholder = "Ejemplo: 1234",
                 keyboardType = KeyboardType.Number,
                 onValueChange = { homeViewModel.onToQuoteChange(it) },
+                maxLength = 6
             )
         }
         Container {
