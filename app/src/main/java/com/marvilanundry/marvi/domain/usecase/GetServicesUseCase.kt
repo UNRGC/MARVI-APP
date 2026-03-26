@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetServicesUseCase @Inject constructor(
     val repository: ServiceRepository
 ) {
-    suspend operator fun invoke(): List<Services> {
-        return repository.getServices()
+    suspend operator fun invoke(token: String): List<Services> {
+        return repository.getServices(token)
     }
 }

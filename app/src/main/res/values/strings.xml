@@ -14,17 +14,20 @@
     <string name="marvi_login_password">Contraseña</string>
     <string name="marvi_login_password_placeholder">Ingresa tu contraseña</string>
     <string name="marvi_login_button">Iniciar sesión</string>
+    <string name="marvi_login_google_button">Iniciar con Google</string>
     <string name="marvi_login_button_message">El correo electrónico y la contraseña deben ser válidos</string>
-    <string name="marvi_login_forgot_button">¿Olvidaste tu contraseña?</string>
-    <string name="marvi_login_register_button">¿No tienes cuenta? Regístrate aquí</string>
+    <string name="marvi_login_forgot_button">¡Olvide contraseña!</string>
+    <string name="marvi_login_register_button">¡Regístrate aquí!</string>
     <string name="marvi_login_dialog_success_title">¡Inicio de sesión exitoso!</string>
-    <string name="marvi_login_dialog_success_message">¡Bienvenido! estamos felices de tenerte aquí.</string>
+    <string name="marvi_login_dialog_success_message">¡Bienvenido! Estamos felices de tenerte aquí.</string>
     <string name="marvi_login_dialog_success_confirm_button">Continuar</string>
     <string name="marvi_login_dialog_error_title">Error al iniciar sesión</string>
     <string name="marvi_login_dialog_error_confirm_button">Aceptar</string>
+    <string name="marvi_login_google_no_credential_message">No hay cuentas de Google disponibles en este dispositivo. Agrega una cuenta o inicia con correo y contraseña.</string>
+    <string name="web_client_id" translatable="false">922337878533-f0pslr5h00j8qo41b54fipco8fru6hv0.apps.googleusercontent.com</string>
 
     <string name="marvi_register_title">¿No tienes cuenta?</string>
-    <string name="marvi_register_subtitle">¡Registrate ahora mismo! Solo completa la información necesaria* para comenzar.</string>
+    <string name="marvi_register_subtitle">¡Regístrate ahora mismo! Solo completa la información necesaria* para comenzar.</string>
     <string name="marvi_register_code">Usuario*</string>
     <string name="marvi_register_code_placeholder">Crea un nombre de usuario</string>
     <string name="marvi_register_name">Nombre*</string>
@@ -54,7 +57,7 @@
     <string name="marvi_register_dialog_error_confirm_button">Aceptar</string>
 
     <string name="marvi_recovery_title">¿Olvidaste tu contraseña?</string>
-    <string name="marvi_recovery_subtitle">¡No te preocupes! te enviaremos un enlace de restablecimiento a tu correo electrónico.</string>
+    <string name="marvi_recovery_subtitle">¡No te preocupes! Te enviaremos un enlace de restablecimiento a tu correo electrónico.</string>
     <string name="marvi_recovery_email">Correo electrónico*</string>
     <string name="marvi_recovery_email_placeholder">Ingresa tu correo electrónico</string>
     <string name="marvi_recovery_tip">Si no ves el correo en unos minutos, revisa tu bandeja de spam o correos no deseados.</string>
@@ -84,14 +87,14 @@
 
     <string name="marvi_follow_title">Seguimiento de pedidos</string>
     <string name="marvi_follow_order">Ingresa tu número de pedido</string>
-    <string name="marvi_follow_order_placeholder">Ejemplo: 1234</string>
+    <string name="marvi_follow_order_placeholder">Ejemplo: 20260101000000</string>
     <string name="marvi_follow_button">Consultar</string>
     <string name="marvi_follow_button_message">El número de pedido debe ser válido</string>
     <string name="marvi_follow_status_title">Seguimiento y estado del pedido:</string>
     <string name="marvi_follow_status_one">Pendiente</string>
     <string name="marvi_follow_status_one_message">El pedido fue recibido en la tienda.</string>
     <string name="marvi_follow_status_two">Listo</string>
-    <string name="marvi_follow_status_two_message">El pedido esta listo para ser recogido.</string>
+    <string name="marvi_follow_status_two_message">El pedido está listo para ser recogido.</string>
     <string name="marvi_follow_status_three">Entregado</string>
     <string name="marvi_follow_status_three_message">El pedido fue recogido en la tienda.</string>
 </resources>

@@ -7,7 +7,7 @@ import javax.inject.Inject
 class PutUpdateClientUseCase @Inject constructor(
     private val repository: ClientRepository
 ) {
-    suspend operator fun invoke(updateClient: UpdateClient): String {
-        return repository.putUpdateClient(updateClient)
+    suspend operator fun invoke(clientId: String, updateClient: UpdateClient, token: String): String {
+        return repository.putUpdateClient(clientId, updateClient, token)
     }
 }

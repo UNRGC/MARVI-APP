@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ServiceRepositoryImpl @Inject constructor(
     private val api: ApiService
 ) : ServiceRepository {
-    override suspend fun getServices(): List<Services> {
-        return api.getServices().map { it.toServices() }
+    override suspend fun getServices(token: String): List<Services> {
+        return api.getServices(token).map { it.toServices() }
     }
 }

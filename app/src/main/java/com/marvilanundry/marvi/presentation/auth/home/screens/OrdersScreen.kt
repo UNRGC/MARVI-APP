@@ -87,13 +87,14 @@ fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
             ) {
                 items(homeViewModelState.orders.size) { index ->
                     val order = homeViewModelState.orders[index]
+                    val orderCode = order.codigo_pedido ?: order.id_pedido.toString()
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }) {
-                                homeViewModel.getOrder(order.id_pedido)
+                                homeViewModel.getOrder(orderCode)
                             }
                             .border(
                                 width = 1.dp,
@@ -132,7 +133,7 @@ fun OrdersScreen(homeViewModel: HomeViewModel, homeViewModelState: HomeUiState) 
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "#${order.id_pedido}", fontWeight = FontWeight.Bold
+                                    text = orderCode, fontWeight = FontWeight.Bold
                                 )
                                 Box(
                                     modifier = Modifier

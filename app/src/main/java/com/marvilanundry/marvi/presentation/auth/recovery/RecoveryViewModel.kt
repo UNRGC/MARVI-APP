@@ -3,65 +3,129 @@ package com.marvilanundry.marvi.presentation.auth.recovery
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.marvilanundry.marvi.domain.model.Email
-import com.marvilanundry.marvi.domain.usecase.PostResetPasswordClientUseCase
-import com.marvilanundry.marvi.presentation.auth.login.LoginUiState
+import com.marvilanundry.marvi.domain.model.ResetPassword
+import com.marvilanundry.marvi.domain.usecase.PostForgotPasswordUseCase
+import com.marvilanundry.marvi.domain.usecase.PostResetPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.text.isNotBlank
+
+enum class RecoveryStep {
+    ENTER_EMAIL,
+    ENTER_CODE_AND_PASSWORD
+}
 
 @HiltViewModel
 class RecoveryViewModel @Inject constructor(
-    private val postResetPasswordClientUseCase: PostResetPasswordClientUseCase
+    private val postForgotPasswordUseCase: PostForgotPasswordUseCase,
+    private val postResetPasswordUseCase: PostResetPasswordUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(RecoveryUiState())
     val state: StateFlow<RecoveryUiState> = _state
 
-    private fun isValidRecovery(email: String): Boolean {
+    private fun isValidEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun calculateProgress(updatedState: RecoveryUiState): Float {
-        return listOf(
-            updatedState.email
-        ).count { it.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(it).matches() } / 1f
+        return if (updatedState.step == RecoveryStep.ENTER_EMAIL) {
+            if (isValidEmail(updatedState.email)) 0.5f else 0f
+        } else {
+            val fields = listOf(updatedState.code, updatedState.password, updatedState.confirmPassword)
+            0.5f + (fields.count { it.isNotBlank() } / 3f) * 0.5f
+        }
     }
 
     fun onEmailChange(email: String) {
         _state.update { currentState ->
             val stateWithEmailChanged = currentState.copy(email = email)
-            val progress = calculateProgress(stateWithEmailChanged)
-
             stateWithEmailChanged.copy(
-                isRecoveryEnabled = isValidRecovery(email.replace(" ", "")), progressBar = progress
+                isRecoveryEnabled = isValidEmail(email.replace(" ", "")),
+                progressBar = calculateProgress(stateWithEmailChanged)
             )
         }
     }
 
-    fun recovery() {
-        _state.value = _state.value.copy(isLoading = true, message = null, error = null)
-        viewModelScope.launch {
-            val email = Email(_state.value.email)
+    fun onCodeChange(code: String) {
+        _state.update { it.copy(code = code) }
+        validateResetFields()
+    }
 
+    fun onPasswordChange(password: String) {
+        _state.update { it.copy(password = password) }
+        validateResetFields()
+    }
+
+    fun onConfirmPasswordChange(password: String) {
+        _state.update { it.copy(confirmPassword = password) }
+        validateResetFields()
+    }
+
+    private fun validateResetFields() {
+        _state.update { currentState ->
+            val isEnabled = currentState.code.isNotBlank() &&
+                    currentState.password.isNotBlank() &&
+                    currentState.password == currentState.confirmPassword &&
+                    currentState.password.length >= 6
+
+            currentState.copy(
+                isResetEnabled = isEnabled,
+                progressBar = calculateProgress(currentState)
+            )
+        }
+    }
+
+    fun sendOtp() {
+        _state.update { it.copy(isLoading = true, message = null, error = null) }
+        viewModelScope.launch {
             try {
-                val response = postResetPasswordClientUseCase(email)
-                _state.value = _state.value.copy(message = response, isLoading = false)
+                val response = postForgotPasswordUseCase(_state.value.email)
+                _state.update { it.copy(
+                    message = response,
+                    isLoading = false,
+                    step = RecoveryStep.ENTER_CODE_AND_PASSWORD
+                ) }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.message, isLoading = false)
+                _state.update { it.copy(error = e.message, isLoading = false) }
             }
         }
+    }
+
+    fun resetPassword() {
+        _state.update { it.copy(isLoading = true, message = null, error = null) }
+        viewModelScope.launch {
+            try {
+                val resetData = ResetPassword(
+                    codigo = _state.value.code,
+                    contrasena = _state.value.password
+                )
+                val response = postResetPasswordUseCase(_state.value.email, resetData)
+                _state.update { it.copy(message = response, isLoading = false, isSuccess = true) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
+        }
+    }
+
+    fun clearMessages() {
+        _state.update { it.copy(message = null, error = null) }
     }
 }
 
 data class RecoveryUiState(
+    val step: RecoveryStep = RecoveryStep.ENTER_EMAIL,
     val progressBar: Float = 0f,
     val email: String = "",
+    val code: String = "",
+    val password: String = "",
+    val confirmPassword: String = "",
     val message: String? = null,
     val error: String? = null,
     val isRecoveryEnabled: Boolean = false,
-    val isLoading: Boolean = false
+    val isResetEnabled: Boolean = false,
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false
 )

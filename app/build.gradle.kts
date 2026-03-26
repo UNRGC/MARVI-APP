@@ -61,6 +61,9 @@ dependencies {
     // Navigation Libraries
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // Ktor Libraries
     implementation(libs.ktor.client.core)

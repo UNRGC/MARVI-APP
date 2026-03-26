@@ -4,7 +4,6 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marvilanundry.marvi.domain.model.NewClient
-import com.marvilanundry.marvi.domain.usecase.GetClientCodeUseCase
 import com.marvilanundry.marvi.domain.usecase.PostNewClientUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val getClientCodeUseCase: GetClientCodeUseCase,
     private val postNewClientUseCase: PostNewClientUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegisterUiState())
@@ -132,20 +130,9 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun checkCode() {
+    fun next() {
         _state.value =
-            _state.value.copy(isLoading = true, error = null, warning = null, message = null)
-        viewModelScope.launch {
-            try {
-                val response = getClientCodeUseCase(_state.value.code)
-
-                _state.value = _state.value.copy(warning = response, isLoading = false)
-            } catch (e: Exception) {
-                if (e.message?.contains("El código no existe") == true) _state.value =
-                    _state.value.copy(section = 1, isLoading = false)
-                else _state.value = _state.value.copy(error = e.message, isLoading = false)
-            }
-        }
+            _state.value.copy(section = 1, isLoading = false)
     }
 
     fun register() {

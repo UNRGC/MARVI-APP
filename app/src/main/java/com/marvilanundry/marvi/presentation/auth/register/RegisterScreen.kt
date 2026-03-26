@@ -368,7 +368,7 @@ fun RegisterScreen(
                                     message = stringResource(id = R.string.marvi_register_next_button_message),
                                     enabled = registerViewModelState.isNextEnabled
                                 ) {
-                                    registerViewModel.checkCode()
+                                    registerViewModel.next()
                                 }
                             }
 

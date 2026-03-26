@@ -63,11 +63,11 @@ fun NavigationWrapper() {
         }
         composable<Recovery>(enterTransition = {
             slideInHorizontally(
-                initialOffsetX = { it },
+                initialOffsetX = { -it },
             ) + fadeIn()
         }, exitTransition = {
             slideOutHorizontally(
-                targetOffsetX = { it },
+                targetOffsetX = { -it },
             ) + fadeOut()
         }) {
             RecoveryScreen(
@@ -85,7 +85,9 @@ fun NavigationWrapper() {
             ) + fadeOut()
         }) {
             HomeScreen(
-                client = sharedViewModel.client.value, onNavigateToLogin = {
+                client = sharedViewModel.client.value,
+                authToken = sharedViewModel.authToken.value,
+                onNavigateToLogin = {
                     navController.navigate(Login) {
                         popUpTo(Home) { inclusive = true }
                     }

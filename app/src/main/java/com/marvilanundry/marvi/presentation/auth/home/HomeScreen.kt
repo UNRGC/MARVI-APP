@@ -42,7 +42,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 @Composable
-fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
+fun HomeScreen(client: Client?, authToken: String?, onNavigateToLogin: () -> Unit = {}) {
     // Constantes
     val homeViewModel: HomeViewModel = hiltViewModel()
     val homeViewModelState by homeViewModel.state.collectAsStateWithLifecycle()
@@ -74,8 +74,8 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
     }
 
     // Guarda el cliente en el ViewModel
-    LaunchedEffect(Unit) {
-        homeViewModel.setClient(client)
+    LaunchedEffect(client, authToken) {
+        homeViewModel.setSession(client, authToken)
     }
 
     // Si el cliente es nulo, redirige al login
@@ -107,18 +107,26 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
             followedOrder != null -> {
                 if (followedOrder.estado == "Cancelado") {
                     dialogTitle = cancelTitle
-                    dialogMessage = String.format(cancelMessage, followedOrder.id_pedido)
+                    val followOrderCode = followedOrder.codigo_pedido ?: followedOrder.id_pedido.toString()
+                    dialogMessage = String.format(cancelMessage, followOrderCode)
                     showDialogError = true
                 }
             }
 
             order != null -> {
                 val orderDetails =
-                    homeViewModelState.orders?.find { it.id_pedido == order.id_pedido }?.detalles
+                    homeViewModelState.orders?.find {
+                        if (!order.codigo_pedido.isNullOrBlank()) {
+                            it.codigo_pedido == order.codigo_pedido
+                        } else {
+                            it.id_pedido == order.id_pedido
+                        }
+                    }?.detalles
+                val selectedOrderCode = order.codigo_pedido ?: order.id_pedido.toString()
 
                 dialogMessage = String.format(
                     infoMessage,
-                    order.id_pedido.toString(),
+                    selectedOrderCode,
                     order.fecha_pedido,
                     order.fecha_entrega,
                     orderDetails,
@@ -231,12 +239,11 @@ fun HomeScreen(client: Client?, onNavigateToLogin: () -> Unit = {}) {
             }
 
             3 -> {
-                if (!homeViewModelState.isEditEnabled) {
-                    MARVIFloatingActionButton(
-                        icon = R.drawable.ic_pencil_square,
-                    ) {
-                        homeViewModel.editEnabled(true)
-                    }
+                val isEditing = homeViewModelState.isEditEnabled || homeViewModelState.isChangePasswordEnabled
+                MARVIFloatingActionButton(
+                    icon = if (isEditing) R.drawable.ic_x else R.drawable.ic_pencil_square,
+                ) {
+                    homeViewModel.setEditModes(!isEditing)
                 }
             }
         }

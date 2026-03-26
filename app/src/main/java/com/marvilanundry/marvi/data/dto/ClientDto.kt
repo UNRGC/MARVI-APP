@@ -19,6 +19,7 @@ data class ClientDto(
 
 fun ClientDto.toClient(): Client = Client(
     id_cliente = id_cliente,
+    mongo_id = null,
     codigo = codigo,
     nombre = nombre,
     primer_apellido = primer_apellido,
@@ -26,6 +27,8 @@ fun ClientDto.toClient(): Client = Client(
     telefono = telefono,
     correo = correo,
     contrasena = contrasena,
+    estado = null,
+    imagen_perfil = null,
     fecha_registro = fecha_registro,
     activo = activo
 )

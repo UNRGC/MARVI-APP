@@ -11,8 +11,20 @@ import javax.inject.Inject
 class SharedViewModel @Inject constructor() : ViewModel() {
     private val _client = mutableStateOf<Client?>(null)
     val client: State<Client?> = _client
+    private val _authToken = mutableStateOf<String?>(null)
+    val authToken: State<String?> = _authToken
+
+    fun setSession(client: Client, token: String?) {
+        _client.value = client
+        _authToken.value = token
+    }
+
+    fun clearSession() {
+        _client.value = null
+        _authToken.value = null
+    }
 
     fun setClient(client: Client) {
-        _client.value = client
+        setSession(client, null)
     }
 }

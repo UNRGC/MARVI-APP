@@ -10,11 +10,11 @@ import com.marvilanundry.marvi.domain.repository.ClientRepository
 import com.marvilanundry.marvi.domain.repository.OrderRepository
 import com.marvilanundry.marvi.domain.repository.ServiceRepository
 import com.marvilanundry.marvi.domain.usecase.GetApiWakeUpUseCase
-import com.marvilanundry.marvi.domain.usecase.GetClientCodeUseCase
 import com.marvilanundry.marvi.domain.usecase.GetOrderByIdUseCase
 import com.marvilanundry.marvi.domain.usecase.GetOrdersByClientUseCase
 import com.marvilanundry.marvi.domain.usecase.GetServicesUseCase
 import com.marvilanundry.marvi.domain.usecase.PostLoginClientUseCase
+import com.marvilanundry.marvi.domain.usecase.PostLoginGoogleUseCase
 import com.marvilanundry.marvi.domain.usecase.PostNewClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PostResetPasswordClientUseCase
 import com.marvilanundry.marvi.domain.usecase.PutUpdateClientUseCase
@@ -58,11 +58,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGetClientCodeUseCase(repo: ClientRepository): GetClientCodeUseCase =
-        GetClientCodeUseCase(repo)
-
-    @Provides
-    @Singleton
     fun provideGetOrderByIdUseCase(repo: OrderRepository): GetOrderByIdUseCase =
         GetOrderByIdUseCase(repo)
 
@@ -90,6 +85,11 @@ object AppModule {
     @Singleton
     fun providePostLoginClientUseCase(repo: ClientRepository): PostLoginClientUseCase =
         PostLoginClientUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun providePostLoginGoogleUseCase(repo: ClientRepository): PostLoginGoogleUseCase =
+        PostLoginGoogleUseCase(repo)
 
     @Provides
     @Singleton

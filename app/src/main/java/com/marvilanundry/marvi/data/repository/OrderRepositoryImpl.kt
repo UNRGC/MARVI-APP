@@ -11,10 +11,10 @@ import javax.inject.Inject
 class OrderRepositoryImpl @Inject constructor(
     private val api: ApiService
 ) : OrderRepository {
-    override suspend fun getOrderById(order: Int): Order {
-        return api.getOrderById(order).toOrder()
+    override suspend fun getOrderById(orderCode: String, token: String): Order {
+        return api.getOrderById(orderCode, token).toOrder()
     }
-    override suspend fun getOrdersByClient(clientId: Int, search: String?): List<Orders> {
-        return api.getOrdersByClient(clientId, search).map { it.toOrders() }
+    override suspend fun getOrdersByClient(clientId: String, token: String, search: String?): List<Orders> {
+        return api.getOrdersByClient(clientId, token).map { it.toOrders() }
     }
 }

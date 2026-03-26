@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetOrdersByClientUseCase @Inject constructor(
     val repository: OrderRepository
 ) {
-    suspend operator fun invoke(clientId: Int, search: String? = null): List<Orders> {
-        return repository.getOrdersByClient(clientId, search)
+    suspend operator fun invoke(clientId: String, token: String, search: String? = null): List<Orders> {
+        return repository.getOrdersByClient(clientId, token, search)
     }
 }

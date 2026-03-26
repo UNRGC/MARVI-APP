@@ -1,12 +1,11 @@
 package com.marvilanundry.marvi.domain.model
 
 data class UpdateClient (
-    val id_cliente: Int,
-    val codigo: String,
     val nombre: String,
     val primer_apellido: String,
-    val segundo_apellido: String?,
-    val telefono: String,
+    val segundo_apellido: String? = null,
+    val telefono: String? = null,
     val correo: String,
-    val contrasena: String
+    val estado: String,
+    val imagen_perfil: String? = null
 )

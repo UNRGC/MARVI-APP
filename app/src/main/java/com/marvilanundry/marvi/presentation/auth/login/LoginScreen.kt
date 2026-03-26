@@ -1,6 +1,14 @@
 package com.marvilanundry.marvi.presentation.auth.login
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,9 +32,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.marvilanundry.marvi.R
 import com.marvilanundry.marvi.presentation.core.components.MARVIButton
 import com.marvilanundry.marvi.presentation.core.components.MARVIButtonType
@@ -44,6 +57,7 @@ import com.marvilanundry.marvi.presentation.core.components.MARVIDialog
 import com.marvilanundry.marvi.presentation.core.components.MARVIDialogType
 import com.marvilanundry.marvi.presentation.core.components.MARVITextField
 import com.marvilanundry.marvi.presentation.core.navigation.SharedViewModel
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -57,26 +71,27 @@ fun LoginScreen(
     val loginViewModel: LoginViewModel = hiltViewModel()
     val loginViewModelState by loginViewModel.state.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val showDialogLoading = loginViewModelState.isLoading
-    val error = loginViewModelState.error?.split(",", limit = 2)
-    val client = loginViewModelState.client
+    val googleNoCredentialMessage = stringResource(id = R.string.marvi_login_google_no_credential_message)
 
     var showDialogSuccess: Boolean by remember { mutableStateOf(false) }
     var showDialogError: Boolean by remember { mutableStateOf(false) }
     var viewPassword: Boolean by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(loginViewModelState.isLoading) {
-        when {
-            error != null -> {
-                dialogMessage = if (error.size > 1) error[1].trim() else error[0]
-                showDialogError = true
-            }
-
-            client != null -> {
-                sharedViewModel.setClient(client)
-                showDialogSuccess = true
-            }
+    LaunchedEffect(loginViewModelState.error, loginViewModelState.client) {
+        if (loginViewModelState.error != null) {
+            val error = loginViewModelState.error!!.split(",", limit = 2)
+            dialogMessage = if (error.size > 1) error[1].trim() else error[0]
+            showDialogError = true
+        } else if (loginViewModelState.client != null) {
+            sharedViewModel.setSession(
+                client = loginViewModelState.client!!,
+                token = loginViewModelState.authToken
+            )
+            showDialogSuccess = true
         }
     }
 
@@ -114,9 +129,11 @@ fun LoginScreen(
                 message = dialogMessage,
                 onConfirm = {
                     showDialogError = false
+                    loginViewModel.resetState()
                 },
                 onDismiss = {
                     showDialogError = false
+                    loginViewModel.resetState()
                 })
         }
     }
@@ -230,27 +247,84 @@ fun LoginScreen(
                         modifier = Modifier.height(12.dp)
                     )
                     MARVIButton(
-                        text = stringResource(id = R.string.marvi_login_forgot_button),
+                        text = stringResource(id = R.string.marvi_login_google_button),
                         modifier = Modifier.fillMaxWidth(),
                         type = MARVIButtonType.OUTLINED
                     ) {
-                        loginViewModel.resetState()
-                        onNavigateToForgot()
+                        focusManager.clearFocus()
+                        scope.launch {
+                            try {
+                                val idToken = getGoogleIdToken(context)
+                                loginViewModel.loginAsGoogle(idToken)
+                            } catch (e: GetCredentialCancellationException) {
+                                Log.w("GoogleSignIn", "Inicio con Google cancelado")
+                                loginViewModel.onGoogleSignInError("Inicio con Google cancelado.")
+                            } catch (e: NoCredentialException) {
+                                Log.i("GoogleSignIn", "Sin credenciales de Google disponibles para este dispositivo")
+                                loginViewModel.onGoogleSignInError(googleNoCredentialMessage)
+                            } catch (e: GetCredentialException) {
+                                Log.e("GoogleSignIn", "Error de CredentialManager: ${e.message} (Type: ${e.type})", e)
+                                loginViewModel.onGoogleSignInError(
+                                    e.message ?: "No se pudo iniciar con Google."
+                                )
+                            } catch (e: Exception) {
+                                Log.e("GoogleSignIn", "Error inesperado al obtener token: ${e.message}", e)
+                                loginViewModel.onGoogleSignInError(
+                                    e.message ?: "No se pudo obtener el token de Google."
+                                )
+                            }
+                        }
                     }
                     Spacer(
                         modifier = Modifier.height(12.dp)
                     )
-                    MARVIButton(
-                        text = stringResource(id = R.string.marvi_login_register_button),
-                        modifier = Modifier.fillMaxWidth(),
-                        type = MARVIButtonType.LINK,
-                        fontSize = 12.sp
-                    ) {
-                        loginViewModel.resetState()
-                        onNavigateToRegister()
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        MARVIButton(
+                            text = stringResource(id = R.string.marvi_login_forgot_button),
+                            modifier = Modifier.weight(1f),
+                            type = MARVIButtonType.LINK,
+                            fontSize = 12.sp
+                        ) {
+                            loginViewModel.resetState()
+                            onNavigateToForgot()
+                        }
+                        Spacer(modifier = Modifier.size(16.dp))
+                        MARVIButton(
+                            text = stringResource(id = R.string.marvi_login_register_button),
+                            modifier = Modifier.weight(1f),
+                            type = MARVIButtonType.LINK,
+                            fontSize = 12.sp
+                        ) {
+                            loginViewModel.resetState()
+                            onNavigateToRegister()
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private suspend fun getGoogleIdToken(context: Context): String {
+    val credentialManager = CredentialManager.create(context)
+    val googleIdOption = GetGoogleIdOption.Builder()
+        .setServerClientId(context.getString(R.string.web_client_id))
+        .setFilterByAuthorizedAccounts(false)
+        .setAutoSelectEnabled(false)
+        .build()
+
+    val request = GetCredentialRequest.Builder()
+        .addCredentialOption(googleIdOption)
+        .build()
+
+    val result = credentialManager.getCredential(context = context, request = request)
+    val credential = result.credential
+
+    if (credential is CustomCredential &&
+        credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+    ) {
+        return GoogleIdTokenCredential.createFrom(credential.data).idToken
+    }
+
+    throw IllegalStateException("Credencial de Google invalida.")
 }

@@ -4,6 +4,6 @@ import com.marvilanundry.marvi.domain.model.Order
 import com.marvilanundry.marvi.domain.model.Orders
 
 interface OrderRepository {
-    suspend fun getOrderById(order: Int): Order
-    suspend fun getOrdersByClient(clientId: Int, search: String? = null): List<Orders>
+    suspend fun getOrderById(orderCode: String, token: String): Order
+    suspend fun getOrdersByClient(clientId: String, token: String, search: String? = null): List<Orders>
 }

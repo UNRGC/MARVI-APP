@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.marvilanundry.marvi.domain.model.Client
 import com.marvilanundry.marvi.domain.model.Login
 import com.marvilanundry.marvi.domain.usecase.PostLoginClientUseCase
+import com.marvilanundry.marvi.domain.usecase.PostLoginGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val postLoginUseCase: PostLoginClientUseCase
+    private val postLoginUseCase: PostLoginClientUseCase,
+    private val postLoginGoogleUseCase: PostLoginGoogleUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoginUiState())
     val state: StateFlow<LoginUiState> = _state
@@ -48,11 +50,36 @@ class LoginViewModel @Inject constructor(
             )
             try {
                 val response = postLoginUseCase(credentials)
-                _state.value = _state.value.copy(client = response, isLoading = false)
+                _state.value = _state.value.copy(
+                    client = response.client,
+                    authToken = response.token,
+                    isLoading = false
+                )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(error = e.message, isLoading = false)
             }
         }
+    }
+
+    fun loginAsGoogle(idToken: String) {
+
+        _state.value = _state.value.copy(isLoading = true, error = null)
+        viewModelScope.launch {
+            try {
+                val response = postLoginGoogleUseCase(idToken)
+                _state.value = _state.value.copy(
+                    client = response.client,
+                    authToken = response.token,
+                    isLoading = false
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(error = e.message, isLoading = false)
+            }
+        }
+    }
+
+    fun onGoogleSignInError(message: String) {
+        _state.value = _state.value.copy(error = message, isLoading = false)
     }
 
     fun resetState() {
@@ -64,6 +91,7 @@ data class LoginUiState(
     val email: String = "",
     val password: String = "",
     val client: Client? = null,
+    val authToken: String? = null,
     val error: String? = null,
     val isLoginEnabled: Boolean = false,
     val isLoading: Boolean = false
